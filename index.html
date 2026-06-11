@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Apex Arena Tournament</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:var(--bg);}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(245,166,35,0.08) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(245,166,35,0.05) 0%,transparent 60%),linear-gradient(135deg,var(--bg) 0%,var(--bg-mid) 100%);}
+.hero-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(60deg,rgba(245,166,35,0.025) 0px,rgba(245,166,35,0.025) 1px,transparent 1px,transparent 40px),repeating-linear-gradient(120deg,rgba(245,166,35,0.025) 0px,rgba(245,166,35,0.025) 1px,transparent 1px,transparent 40px);}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:1200px;margin:0 auto;padding:0 5% 120px;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:60px;padding-top:100px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;background:var(--amber-glow);border:1px solid rgba(245,166,35,0.3);padding:5px 16px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:20px;}
+.hero-eyebrow::before{content:'';width:7px;height:7px;background:var(--amber);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.5);}}
+.hero-title{font-family:var(--font-display);font-size:clamp(48px,7vw,84px);letter-spacing:3px;line-height:.95;color:var(--text);margin-bottom:20px;}
+.hero-title .hi{color:var(--amber);display:block;}
+.hero-desc{color:var(--text-muted);font-size:16px;line-height:1.7;max-width:460px;margin-bottom:36px;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.trophy-wrap{position:relative;width:300px;height:300px;margin:0 auto;}
+.trophy-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(245,166,35,0.2);animation:spin 20s linear infinite;}
+.trophy-ring::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--amber);border-radius:50%;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.trophy-ring2{inset:24px;animation-duration:30s;animation-direction:reverse;}
+.trophy-center{position:absolute;inset:48px;background:var(--bg-mid);border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:80px;box-shadow:0 0 60px rgba(245,166,35,0.15);}
+.hero-stats{position:absolute;bottom:0;left:0;right:0;background:rgba(17,24,40,0.8);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:center;}
+[data-theme="light"] .hero-stats{background:rgba(255,255,255,0.85);}
+.s-item{padding:20px 44px;text-align:center;border-right:1px solid var(--border);}
+.s-item:last-child{border-right:none;}
+.s-num{font-family:var(--font-display);font-size:32px;letter-spacing:2px;color:var(--amber);line-height:1;}
+.s-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:3px;}
+.about{max-width:1200px;margin:0 auto;padding:80px 5%;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.features{display:grid;gap:18px;margin-top:28px;}
+.feat{display:flex;gap:14px;align-items:flex-start;}
+.feat-icon{width:42px;height:42px;background:var(--amber-glow);border:1px solid rgba(245,166,35,.25);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.feat-text h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.feat-text p{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.tl{position:relative;padding-left:26px;}
+.tl::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--amber),transparent);}
+.tl-item{position:relative;padding:16px 20px;background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:14px;transition:var(--transition);}
+.tl-item:hover{border-color:rgba(245,166,35,.3);transform:translateX(4px);}
+.tl-item::before{content:'';position:absolute;left:-31px;top:50%;transform:translateY(-50%);width:11px;height:11px;background:var(--amber);border-radius:50%;border:3px solid var(--bg);}
+.tl-date{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--amber);}
+.tl-event{font-size:14px;font-weight:600;color:var(--text);}
+.tl-desc{font-size:12px;color:var(--text-muted);}
+@media(max-width:768px){.hero-inner,.about-grid{grid-template-columns:1fr;}.trophy-wrap{display:none;}.s-item{border-right:none;border-bottom:1px solid var(--border);}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Season 2025 · Now Live</div>
+      <h1 class="hero-title">FORGE YOUR<span class="hi">LEGACY</span></h1>
+      <p class="hero-desc">The Apex Arena Tournament unites the world's elite competitors in an 8-week battle for supremacy, glory, and the championship crown.</p>
+      <div class="hero-actions">
+        <a href="tournament.html" class="btn btn-primary">Register Now →</a>
+        <a href="players.html"    class="btn btn-outline">Meet the Players</a>
+      </div>
+    </div>
+    <div class="trophy-wrap">
+      <div class="trophy-ring"></div><div class="trophy-ring trophy-ring2"></div>
+      <div class="trophy-center">🏆</div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="s-item"><div class="s-num" id="hsPlayers">—</div><div class="s-lbl">Players</div></div>
+    <div class="s-item"><div class="s-num">4</div><div class="s-lbl">Tournaments</div></div>
+    <div class="s-item"><div class="s-num">$100K</div><div class="s-lbl">Prize Pool</div></div>
+    <div class="s-item"><div class="s-num" id="hsRegs">—</div><div class="s-lbl">Registered</div></div>
+  </div>
+</section>
+<section class="page-content">
+  <div class="about">
+    <div class="about-grid">
+      <div>
+        <span class="section-label">About the Tournament</span>
+        <h2 class="section-title">COMPETITION AT ITS FINEST</h2>
+        <div class="amber-line"></div>
+        <p class="section-subtitle">Apex Arena is the premier competitive circuit hosting the most technically gifted athletes from across the globe.</p>
+        <div class="features">
+          <div class="feat"><div class="feat-icon">⚔️</div><div class="feat-text"><h4>Single Elimination</h4><p>Every match matters. One loss and you're out.</p></div></div>
+          <div class="feat"><div class="feat-icon">🌍</div><div class="feat-text"><h4>Global Participants</h4><p>Competitors from 18+ countries.</p></div></div>
+          <div class="feat"><div class="feat-icon">💰</div><div class="feat-text"><h4>$100K Prize Pool</h4><p>Champion takes $50K. Top 8 earn prize money.</p></div></div>
+          <div class="feat"><div class="feat-icon">🔴</div><div class="feat-text"><h4>Live Broadcast</h4><p>Every match streamed with professional commentary.</p></div></div>
+        </div>
+      </div>
+      <div class="tl">
+        <div class="tl-item"><div class="tl-date">Jul 5, 2025</div><div class="tl-event">🚀 Group Stage</div><div class="tl-desc">32 players compete across 4 groups.</div></div>
+        <div class="tl-item"><div class="tl-date">Aug 9, 2025</div><div class="tl-event">⚡ Quarter Finals</div><div class="tl-desc">Top 8 advance to knockout.</div></div>
+        <div class="tl-item"><div class="tl-date">Aug 16, 2025</div><div class="tl-event">🔥 Semi Finals</div><div class="tl-desc">Best-of-5 series.</div></div>
+        <div class="tl-item"><div class="tl-date">Aug 23, 2025</div><div class="tl-event">🏆 Grand Final</div><div class="tl-desc">Champion crowned. Legacy sealed.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Built with Node.js + Express + localStorage.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+async function loadStats(){
+  try{
+    const [pr,rr]=await Promise.all([GET('/players'),GET('/registrations')]);
+    document.getElementById('hsPlayers').textContent=pr.meta.total||pr.data.length;
+    document.getElementById('hsRegs').textContent=rr.meta.total||rr.data.length;
+  }catch{
+    document.getElementById('hsPlayers').textContent='9';
+    document.getElementById('hsRegs').textContent='—';
+  }
+}
+loadStats();
+</script>
+</body></html>

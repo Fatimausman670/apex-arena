@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sign Up — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 5% 40px;background:radial-gradient(ellipse 60% 50% at 75% 30%,rgba(245,166,35,0.07) 0%,transparent 60%),var(--bg);}
+.auth-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;max-width:940px;width:100%;align-items:start;}
+.auth-left{padding-top:20px;}
+.auth-perk{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:12px;font-size:13px;color:var(--text-muted);transition:var(--transition);}
+.auth-perk:hover{border-color:rgba(245,166,35,.25);color:var(--text);}
+.auth-switch{margin-top:24px;font-size:13px;color:var(--text-muted);}
+.auth-switch a{color:var(--amber);text-decoration:none;font-weight:600;}
+.auth-switch a:hover{text-decoration:underline;}
+.form-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px 32px;}
+.strength-wrap{margin-top:6px;}
+.strength-bg{height:5px;background:var(--bg-light);border-radius:999px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:999px;transition:width .4s,background .4s;width:0%;}
+.strength-row{display:flex;justify-content:space-between;margin-top:4px;}
+.strength-text{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.req-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:8px;}
+.req-item{font-size:10px;color:var(--text-faint);display:flex;align-items:center;gap:4px;}
+.req-item.met{color:#2ecc71;}
+.req-item .dot{width:5px;height:5px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
+.req-item.met .dot{background:#2ecc71;}
+.pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:17px;user-select:none;z-index:2;}
+.submit-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--radius-sm);padding:14px;font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 8px 24px var(--amber-glow);}
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;}
+.success-overlay.show{display:flex;}
+.success-box{background:var(--bg-mid);border:1px solid rgba(46,204,113,.4);border-radius:var(--radius-lg);padding:48px;text-align:center;max-width:420px;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.input-wrap{position:relative;}
+@media(max-width:760px){.auth-grid{grid-template-columns:1fr;}.auth-left{display:none;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="auth-page">
+  <div class="auth-grid">
+    <div class="auth-left">
+      <span class="section-label">Join the Arena</span>
+      <h1 class="section-title" style="font-size:clamp(26px,4vw,42px);">CREATE YOUR ACCOUNT</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle" style="margin-bottom:28px;">Register and compete in the Apex Arena Tournament Season 2025.</p>
+      <div class="auth-perk">🏆 Access live match schedules & scores</div>
+      <div class="auth-perk">⚡ Track your rank and performance stats</div>
+      <div class="auth-perk">🎟️ Register for tournaments with 1 click</div>
+      <div class="auth-perk">🌍 Compete against players from 18+ countries</div>
+      <div class="auth-perk">💾 Data stored securely in our database</div>
+      <div class="auth-switch">Already have an account? <a href="login.html">Log in →</a></div>
+    </div>
+    <div class="form-box">
+      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--text);margin-bottom:4px;">SIGN UP</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">All data stored securely. Fields marked <span style="color:var(--amber)">*</span> required.</div>
+      <form id="signupForm" novalidate>
+        <div class="form-row">
+          <div class="form-group" id="grp-fn"><label>First Name <span class="req">*</span></label><input type="text" id="sFirst" placeholder="Alex" autocomplete="given-name"/><div class="field-err">First name required.</div></div>
+          <div class="form-group" id="grp-ln"><label>Last Name <span class="req">*</span></label><input type="text" id="sLast" placeholder="Stone" autocomplete="family-name"/><div class="field-err">Last name required.</div></div>
+        </div>
+        <div class="form-group" id="grp-age"><label>Age <span class="req">*</span></label><input type="number" id="sAge" placeholder="21" min="13" max="99"/><div class="field-err">Age must be 13–99.</div></div>
+        <div class="form-group" id="grp-em"><label>Email Address <span class="req">*</span></label><input type="email" id="sEmail" placeholder="you@example.com" autocomplete="email"/><div class="field-err">Valid email required.</div></div>
+        <div class="form-group" id="grp-pw">
+          <label>Password <span class="req">*</span></label>
+          <div class="input-wrap"><input type="password" id="sPwd" placeholder="Create a strong password" autocomplete="new-password"/><span class="pwd-eye" id="eyePwd">🙈</span></div>
+          <div class="strength-wrap"><div class="strength-bg"><div class="strength-fill" id="sFill"></div></div><div class="strength-row"><span class="strength-text" id="sTxt" style="color:var(--text-faint)">No password</span><span style="font-size:10px;color:var(--text-faint)">Strength</span></div></div>
+          <div class="req-list">
+            <div class="req-item" id="r-len"><span class="dot"></span>Min 8 chars</div>
+            <div class="req-item" id="r-up"><span class="dot"></span>Uppercase</div>
+            <div class="req-item" id="r-lo"><span class="dot"></span>Lowercase</div>
+            <div class="req-item" id="r-num"><span class="dot"></span>Number</div>
+            <div class="req-item" id="r-sp"><span class="dot"></span>Special char</div>
+          </div>
+          <div class="field-err">Password doesn't meet all requirements.</div>
+        </div>
+        <div class="form-group" id="grp-cp">
+          <label>Confirm Password <span class="req">*</span></label>
+          <div class="input-wrap"><input type="password" id="sConf" placeholder="Re-enter password" autocomplete="new-password"/><span class="pwd-eye" id="eyeConf">🙈</span></div>
+          <div class="field-err">Passwords do not match.</div>
+        </div>
+        <button type="submit" class="submit-btn" id="signupBtn">Create Account →</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="success-overlay" id="successOvl">
+  <div class="success-box">
+    <div style="font-size:64px;margin-bottom:14px;">🏆</div>
+    <div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--text);margin-bottom:10px;">WELCOME, <span id="successName" style="color:var(--amber)"></span>!</div>
+    <div style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Your account has been created and saved to the database. You're ready to compete.</div>
+    <a href="login.html" class="submit-btn" style="text-decoration:none;display:inline-flex;width:auto;padding:12px 28px;">Log In Now →</a>
+  </div>
+</div>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+const SL=[{w:'20%',c:'#e74c3c',t:'Very Weak'},{w:'40%',c:'#e67e22',t:'Weak'},{w:'60%',c:'#f5a623',t:'Fair'},{w:'80%',c:'#2ecc71',t:'Strong'},{w:'100%',c:'#27ae60',t:'Very Strong'}];
+function pwdStrength(p){
+  const c={len:p.length>=8,up:/[A-Z]/.test(p),lo:/[a-z]/.test(p),num:/[0-9]/.test(p),sp:/[@#$%^&*!?~\-_+=]/.test(p)};
+  const s=Object.values(c).filter(Boolean).length;
+  document.getElementById('r-len').classList.toggle('met',c.len);document.getElementById('r-up').classList.toggle('met',c.up);
+  document.getElementById('r-lo').classList.toggle('met',c.lo);document.getElementById('r-num').classList.toggle('met',c.num);
+  document.getElementById('r-sp').classList.toggle('met',c.sp);
+  const lv=SL[Math.max(0,s-1)];
+  document.getElementById('sFill').style.width=p?lv.w:'0%';document.getElementById('sFill').style.background=lv.c;
+  document.getElementById('sTxt').textContent=p?lv.t:'No password';document.getElementById('sTxt').style.color=p?lv.c:'var(--text-faint)';
+  return s;
+}
+document.getElementById('sPwd').addEventListener('input',function(){pwdStrength(this.value);if(document.getElementById('sConf').value)vConf();});
+document.getElementById('sConf').addEventListener('input',vConf);
+['sFirst','sLast','sAge','sEmail'].forEach(id=>document.getElementById(id).addEventListener('input',()=>cErr(id)));
+
+function mkEye(eyeId,inputId){document.getElementById(eyeId).addEventListener('click',function(){const i=document.getElementById(inputId);const s=i.type==='password';i.type=s?'text':'password';this.textContent=s?'👁️':'🙈';});}
+mkEye('eyePwd','sPwd');mkEye('eyeConf','sConf');
+
+function sErr(id,msg){const g=document.getElementById('grp-'+id);g.classList.add('err');const f=g.querySelector('.field-err');if(f&&msg)f.textContent=msg;}
+function cErr(id){document.getElementById('grp-'+id)?.classList.remove('err');}
+function vConf(){const p=document.getElementById('sPwd').value,c=document.getElementById('sConf').value;if(c&&p!==c)sErr('cp','Passwords do not match.');else cErr('cp');}
+
+document.getElementById('signupForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const fn=document.getElementById('sFirst').value.trim(),ln=document.getElementById('sLast').value.trim();
+  const age=parseInt(document.getElementById('sAge').value),em=document.getElementById('sEmail').value.trim();
+  const pw=document.getElementById('sPwd').value,cp=document.getElementById('sConf').value;
+  const rx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  ['fn','ln','age','em','pw','cp'].forEach(cErr);
+  let ok=true;
+  if(!fn||fn.length<2){sErr('fn','First name must be at least 2 characters.');ok=false;}
+  if(!ln||ln.length<2){sErr('ln','Last name must be at least 2 characters.');ok=false;}
+  if(!age||age<13||age>99){sErr('age','Age must be between 13 and 99.');ok=false;}
+  if(!em||!rx.test(em)){sErr('em','Enter a valid email address.');ok=false;}
+  if(pwdStrength(pw)<5){sErr('pw','Password must meet all 5 requirements.');ok=false;}
+  if(pw!==cp){sErr('cp','Passwords do not match.');ok=false;}
+  if(!ok)return;
+  const btn=document.getElementById('signupBtn');btn.disabled=true;btn.textContent='⏳ Creating account…';
+  try{
+    const r=await POST('/auth/signup',{firstName:fn,lastName:ln,age,email:em,password:pw});
+    Auth.setSession(r.data.user,r.data.token);
+    document.getElementById('successName').textContent=fn;
+    document.getElementById('successOvl').classList.add('show');
+  }catch(err){
+    showToastGlobal('❌',err.message||'Registration failed','red');
+    if(err.message&&err.message.includes('Email'))sErr('em',err.message);
+  }finally{btn.disabled=false;btn.textContent='Create Account →';}
+});
+</script></body></html>

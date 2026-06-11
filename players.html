@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Players — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.players-wrap{max-width:1200px;margin:0 auto;padding:40px 5% 80px;}
+.filter-bar{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px 24px;margin-bottom:28px;}
+.filter-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+.filter-row{display:grid;grid-template-columns:1fr 180px 180px 160px auto;gap:10px;align-items:center;}
+.filter-row input,.filter-row select{background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:10px 14px;outline:none;transition:var(--transition);width:100%;appearance:none;-webkit-appearance:none;}
+.filter-row input::placeholder{color:var(--text-faint);}
+.filter-row input:focus,.filter-row select:focus{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow);}
+.filter-row select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='%23f5a623'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:28px;}
+.filter-row select option{background:var(--bg-mid);}
+.btn-clear-f{background:transparent;border:1.5px solid var(--border);color:var(--text-muted);border-radius:var(--radius-sm);padding:10px 16px;font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:var(--transition);}
+.btn-clear-f:hover{border-color:var(--red);color:var(--red);}
+.result-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.result-count{font-size:12px;color:var(--text-muted);}
+#playersGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.pc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,border-color .3s;cursor:default;position:relative;animation:flipIn .45s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes flipIn{from{transform:rotateY(-90deg) scale(.85);opacity:0;}to{transform:rotateY(0) scale(1);opacity:1;}}
+.pc.flip-out{animation:flipOut .2s ease-in forwards;}
+@keyframes flipOut{to{transform:rotateY(90deg) scale(.85);opacity:0;}}
+.pc:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 56px rgba(0,0,0,.5),0 0 0 1px rgba(245,166,35,.3);border-color:rgba(245,166,35,.4);}
+.pc.top3{border-color:rgba(245,166,35,.2);}
+.pc-top{height:140px;display:flex;align-items:center;justify-content:center;position:relative;background:linear-gradient(160deg,var(--bg-light) 0%,var(--bg) 100%);overflow:hidden;}
+.pc-avatar{font-size:64px;transition:transform .3s;z-index:1;position:relative;}
+.pc:hover .pc-avatar{transform:scale(1.12) translateY(-4px);}
+.pc-pos{position:absolute;top:10px;left:12px;font-family:var(--font-display);font-size:20px;color:rgba(245,166,35,.45);}
+.pc-rank{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.rank-champion{background:linear-gradient(135deg,rgba(255,180,0,.25),rgba(255,100,0,.2));border:1px solid rgba(255,180,0,.5);color:#ffba00;box-shadow:0 0 12px rgba(255,180,0,.3);}
+.rank-diamond{background:rgba(52,152,219,.18);border:1px solid rgba(52,152,219,.45);color:#3498db;}
+.rank-platinum{background:rgba(155,89,182,.18);border:1px solid rgba(155,89,182,.45);color:#a569d1;}
+.rank-gold{background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.4);color:#f5a623;}
+.rank-silver{background:rgba(149,165,166,.12);border:1px solid rgba(149,165,166,.3);color:#95a5a6;}
+.pc-game-chip{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:11px;color:var(--text-muted);}
+.top-ring{position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(245,166,35,.22);animation:spin 18s linear infinite;pointer-events:none;}
+.top-ring::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:7px;height:7px;background:var(--amber);border-radius:50%;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.pc-body{padding:16px 18px 20px;}
+.pc-name{font-family:var(--font-display);font-size:20px;letter-spacing:2px;color:var(--text);transition:color .25s;margin-bottom:2px;}
+.pc:hover .pc-name{color:var(--amber);}
+.pc-handle{font-size:11px;font-weight:600;color:var(--amber);margin-bottom:10px;}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.role-tag,.status-tag{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:999px;}
+.role-fragger{background:rgba(231,76,60,.15);color:#e74c3c;}.role-support{background:rgba(52,152,219,.15);color:#3498db;}
+.role-sniper{background:rgba(155,89,182,.15);color:#9b59b6;}.role-strategist{background:rgba(46,204,113,.15);color:#2ecc71;}
+.role-wildcard{background:rgba(245,166,35,.15);color:#f5a623;}
+.status-active{background:rgba(46,204,113,.12);color:#2ecc71;}.status-rookie{background:rgba(52,152,219,.12);color:#3498db;}
+.pc-bio{font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2;
+overflow:hidden;}
+.pc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;}
+.ps-val{display:block;font-family:var(--font-display);font-size:16px;color:var(--text);text-align:center;line-height:1;}
+.ps-lbl{display:block;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);text-align:center;margin-top:2px;}
+.skill-row{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+.skill-lbl{font-size:10px;color:var(--text-muted);width:28px;flex-shrink:0;}
+.skill-track{flex:1;height:4px;background:var(--bg-light);border-radius:999px;overflow:hidden;}
+.skill-fill{height:100%;background:var(--amber);border-radius:999px;transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.top3 .skill-fill{background:linear-gradient(90deg,var(--amber),#ff6b35);}
+.skill-val{font-size:10px;color:var(--amber);font-weight:700;width:22px;text-align:right;}
+.empty-state{grid-column:1/-1;text-align:center;padding:64px 20px;color:var(--text-muted);}
+.empty-state .ei{font-size:48px;margin-bottom:12px;opacity:.5;}
+.skel{background:linear-gradient(90deg,var(--bg-light) 25%,rgba(40,52,80,.7) 50%,var(--bg-light) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;}
+@keyframes shimmer{from{background-position:200% 0;}to{background-position:-200% 0;}}
+.skel-av{width:60px;height:60px;border-radius:50%;margin:20px auto 12px;}
+.skel-ln{height:11px;}
+.source-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.3);border-radius:999px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3498db;margin-top:14px;}
+@media(max-width:900px){#playersGrid{grid-template-columns:repeat(2,1fr);}
+.filter-row{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){#playersGrid{grid-template-columns:1fr;}.filter-row{grid-template-columns:1fr;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="PLAYERS">
+    <div class="page-header-inner">
+      <span class="section-label">Season 2025 Roster</span>
+      <h1 class="section-title">MEET THE PLAYERS</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle">Dynamic cards loaded from the Express API. Search, filter, and sort in real-time.</p>
+      <div class="source-badge" id="srcBadge">⏳ Loading from API…</div>
+    </div>
+  </div>
+  <div class="stat-grid" style="padding:0 5%;max-width:calc(1200px + 10%)">
+    <div class="stat-cell"><div class="stat-num" id="stTotal">—</div><div class="stat-label">Players</div></div>
+    <div class="stat-cell"><div class="stat-num" id="stScore">—</div><div class="stat-label">Top Score</div></div>
+    <div class="stat-cell"><div class="stat-num" id="stWR">—</div><div class="stat-label">Avg Win Rate</div></div>
+    <div class="stat-cell"><div class="stat-num" id="stNations">—</div><div class="stat-label">Nations</div></div>
+  </div>
+  <div class="players-wrap">
+    <div class="filter-bar">
+      <div class="filter-title">🔎 Search &amp; Filter Players</div>
+      <div class="filter-row">
+        <input type="text" id="searchInput" placeholder="🔍  Search by name or handle…" oninput="debounce()"/>
+        <select id="gameFilter" onchange="debounce()"><option value="All">🎮 All Games</option><option>Valorant</option><option>PUBG</option><option>Fortnite</option></select>
+        <select id="rankFilter" onchange="debounce()"><option value="All">🏅 All Ranks</option><option>Champion</option><option>Diamond</option><option>Platinum</option><option>Gold</option><option>Silver</option></select>
+        <select id="sortSel" onchange="debounce()"><option value="tier">Sort: Rank</option><option value="score">Sort: Score</option><option value="winRate">Sort: Win Rate</option><option value="name">Sort: Name</option></select>
+        <button class="btn-clear-f" onclick="clearFilters()">✕ Clear</button>
+      </div>
+    </div>
+    <div class="result-bar">
+      <span class="result-count" id="resCount">Loading…</span>
+    </div>
+    <div id="playersGrid"></div>
+  </div>
+</div>
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Data from Express API → localStorage cache.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+const RANK_META={Champion:{cls:'rank-champion',icon:'👑'},Diamond:{cls:'rank-diamond',icon:'💎'},Platinum:{cls:'rank-platinum',icon:'🔷'},Gold:{cls:'rank-gold',icon:'🌟'},Silver:{cls:'rank-silver',icon:'⚪'}};
+const ROLE_CLS={Fragger:'role-fragger',Support:'role-support',Sniper:'role-sniper',Strategist:'role-strategist',Wildcard:'role-wildcard'};
+const GI={'Valorant':'🎯','PUBG':'🪖','Fortnite':'⛏️'};
+const LS_K='aa_pc',LS_T='aa_pt';let allP=[],_dt=null;
+
+async function loadPlayers(){
+  showSkel();
+  const cached=localStorage.getItem(LS_K),ts=parseInt(localStorage.getItem(LS_T)||'0');
+  if(cached&&Date.now()-ts<120000){allP=JSON.parse(cached);updateSrc('cache');onLoad();return;}
+  try{
+    const r=await GET('/players');
+    allP=r.data;localStorage.setItem(LS_K,JSON.stringify(allP));localStorage.setItem(LS_T,String(Date.now()));
+    updateSrc('api');onLoad();
+  }catch{
+    try{const r=await fetch('players.json');allP=await r.json();updateSrc('fallback');onLoad();}
+    catch(e){showErr(e);}
+  }
+}
+
+function onLoad(){renderFiltered(false);updateStats();}
+
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const g=document.getElementById('gameFilter').value;
+  const r=document.getElementById('rankFilter').value;
+  const s=document.getElementById('sortSel').value;
+  return [...allP].filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q)&&!p.handle.toLowerCase().includes(q))return false;
+    if(g!=='All'&&p.game!==g)return false;
+    if(r!=='All'&&p.rank!==r)return false;
+    return true;
+  }).sort((a,b)=>{
+    if(r!=='All')return a.tier-b.tier;
+    if(s==='score')return b.score-a.score;
+    if(s==='winRate')return b.winRate-a.winRate;
+    if(s==='name')return a.name.localeCompare(b.name);
+    return a.tier-b.tier;
+  });
+}
+
+function debounce(){clearTimeout(_dt);_dt=setTimeout(()=>renderFiltered(true),120);}
+
+function renderFiltered(anim){
+  const pl=getFiltered(),g=document.getElementById('playersGrid');
+  document.getElementById('resCount').textContent=pl.length+' / '+allP.length+' players';
+  if(!pl.length){g.innerHTML='<div class="empty-state"><div class="ei">🔍</div><p>No players found. <button onclick="clearFilters()" style="margin-left:8px;padding:6px 14px;background:var(--amber);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">Clear filters</button></p></div>';return;}
+  if(anim){g.querySelectorAll('.pc:not(.skeleton-card)').forEach(c=>c.classList.add('flip-out'));setTimeout(()=>buildCards(pl,g),210);}
+  else buildCards(pl,g);
+}
+
+function buildCards(pl,g){
+  g.innerHTML='';
+  pl.forEach((p,i)=>{
+    const rm=RANK_META[p.rank]||RANK_META.Silver,isTop=p.tier<=3;
+    const c=document.createElement('div');c.className='pc'+(isTop?' top3':'');c.style.animationDelay=(i*55)+'ms';
+    c.innerHTML=
+      '<div class="pc-top">'+(isTop?'<div class="top-ring"></div>':'')+
+        '<div class="pc-pos">#'+p.tier+'</div>'+
+        '<div class="pc-avatar">'+p.avatar+'</div>'+
+        '<div class="pc-rank '+rm.cls+'">'+rm.icon+' '+p.rank+'</div>'+
+        '<div class="pc-game-chip">'+(GI[p.game]||'🎮')+' '+p.game+'</div>'+
+      '</div>'+
+      '<div class="pc-body">'+
+        '<div class="pc-name">'+esc(p.name)+'</div>'+
+        '<div class="pc-handle">'+esc(p.handle)+' '+p.flag+' '+esc(p.country)+'</div>'+
+        '<div class="pc-tags">'+
+          '<span class="role-tag '+(ROLE_CLS[p.role]||'')+'">'+p.role+'</span>'+
+          '<span class="status-tag '+(p.status==='Rookie'?'status-rookie':'status-active')+'">'+(p.status==='Rookie'?'🌱 ':'✅ ')+p.status+'</span>'+
+        '</div>'+
+        '<div class="pc-bio">'+esc(p.bio)+'</div>'+
+        '<div class="pc-stats">'+stc(p.score.toLocaleString(),'Score')+stc(p.wins+'W/'+p.losses+'L','Record')+stc(p.winRate+'%','Win Rate')+'</div>'+
+        '<div>'+sbr('ATK',p.attackStat)+sbr('DEF',p.defenseStat)+'</div>'+
+      '</div>';
+    g.appendChild(c);
+  });
+  setTimeout(()=>{document.querySelectorAll('.skill-fill').forEach(e=>e.style.width=e.dataset.w);},80);
+}
+function stc(v,l){return'<div><span class="ps-val">'+v+'</span><span class="ps-lbl">'+l+'</span></div>';}
+function sbr(l,v){return'<div class="skill-row"><span class="skill-lbl">'+l+'</span><div class="skill-track"><div class="skill-fill" style="width:0" data-w="'+v+'%"></div></div><span class="skill-val">'+v+'</span></div>';}
+
+function updateStats(){
+  if(!allP.length)return;
+  document.getElementById('stTotal').textContent=allP.length;
+  document.getElementById('stScore').textContent=Math.max(...allP.map(p=>p.score)).toLocaleString();
+  document.getElementById('stWR').textContent=Math.round(allP.reduce((s,p)=>s+p.winRate,0)/allP.length)+'%';
+  document.getElementById('stNations').textContent=new Set(allP.map(p=>p.country)).size;
+}
+
+function updateSrc(s){
+  const el=document.getElementById('srcBadge');if(!el)return;
+  const m={api:{t:'🟢 Live API · localhost:3000',c:'rgba(46,204,113,.12)',b:'rgba(46,204,113,.3)',tc:'#2ecc71'},cache:{t:'⚡ localStorage cache',c:'rgba(52,152,219,.12)',b:'rgba(52,152,219,.3)',tc:'#3498db'},fallback:{t:'⚠️ Fallback · players.json',c:'rgba(245,166,35,.12)',b:'rgba(245,166,35,.3)',tc:'#f5a623'}};
+  const d=m[s]||m.fallback;el.textContent=d.t;el.style.background=d.c;el.style.borderColor=d.b;el.style.color=d.tc;
+}
+
+function clearFilters(){
+  document.getElementById('searchInput').value='';document.getElementById('gameFilter').value='All';
+  document.getElementById('rankFilter').value='All';document.getElementById('sortSel').value='tier';
+  renderFiltered(true);
+}
+
+function showSkel(){
+  const g=document.getElementById('playersGrid');let h='';
+  for(let i=0;i<9;i++)h+='<div class="pc skeleton-card"><div class="pc-top"><div class="skel skel-av"></div></div><div class="pc-body"><div class="skel skel-ln" style="width:60%;margin-bottom:8px"></div><div class="skel skel-ln" style="width:40%;margin-bottom:14px"></div><div class="skel skel-ln" style="width:90%;margin-bottom:6px"></div><div class="skel skel-ln" style="width:70%"></div></div></div>';
+  g.innerHTML=h;
+}
+function showErr(e){document.getElementById('playersGrid').innerHTML='<div class="empty-state"><div class="ei">⚠️</div><p>'+e.message+'<br><small>Start the API server: <code>node server.js</code></small></p><button onclick="loadPlayers()" style="margin-top:14px;padding:8px 20px;background:var(--amber);color:#fff;border:none;border-radius:6px;cursor:pointer;">↻ Retry</button></div>';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+loadPlayers();
+</script></body></html>

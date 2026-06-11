@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedule — Apex Arena Tournament</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 100%);
+      border-bottom: 1px solid var(--navy-light);
+      padding: 80px 5% 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::after {
+      content: 'SCHEDULE';
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-display);
+      font-size: 120px;
+      color: rgba(245,166,35,0.04);
+      letter-spacing: 8px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .page-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .schedule-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 5%;
+    }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1.5px solid var(--navy-light);
+      background: transparent;
+      color: var(--gray-300);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    /* ── STAGE SECTION ── */
+    .stage-section {
+      margin-bottom: 56px;
+    }
+
+    .stage-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stage-badge {
+      background: var(--amber);
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 4px 14px;
+      border-radius: 999px;
+    }
+
+    .stage-name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+
+    /* ── TABLE ── */
+    .match-table-wrap {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--navy-light);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--navy-light);
+    }
+
+    thead th {
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray-300);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(28,38,64,0.8);
+      background: var(--navy-mid);
+      transition: var(--transition);
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover {
+      background: rgba(28,38,64,0.8);
+    }
+
+    td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--white);
+      vertical-align: middle;
+    }
+
+    /* ── FINAL ROW ── */
+    tbody tr.final-match {
+      background: var(--final-row);
+      border-top: 1px solid rgba(245,166,35,0.3);
+      border-bottom: 1px solid rgba(245,166,35,0.3);
+    }
+
+    tbody tr.final-match td {
+      color: var(--white);
+    }
+
+    .final-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--amber);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* Match number */
+    .match-num {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: var(--gray-500);
+    }
+
+    .final-match .match-num {
+      color: var(--amber);
+    }
+
+    /* Player names */
+    .player-vs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-a {
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .vs-dot {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gray-500);
+      background: var(--navy-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .final-match .vs-dot {
+      background: rgba(245,166,35,0.2);
+      color: var(--amber);
+    }
+
+    /* Status badge */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .status::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-completed {
+      background: rgba(39,174,96,0.15);
+      color: #2ecc71;
+    }
+    .status-completed::before { background: #2ecc71; }
+
+    .status-upcoming {
+      background: rgba(52,152,219,0.15);
+      color: #3498db;
+    }
+    .status-upcoming::before { background: #3498db; }
+
+    .status-live {
+      background: rgba(231,76,60,0.15);
+      color: #e74c3c;
+    }
+    .status-live::before {
+      background: #e74c3c;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    /* Score */
+    .score {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+
+    .score .winner { color: var(--amber); }
+
+    /* Date cell */
+    .date-cell {
+      color: var(--gray-300);
+      font-size: 13px;
+    }
+
+    /* Venue */
+    .venue-cell {
+      color: var(--gray-300);
+      font-size: 13px;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--gray-300);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-final {
+      width: 16px; height: 16px;
+      background: var(--final-row);
+      border: 1px solid rgba(245,166,35,0.3);
+      border-radius: 3px;
+    }
+
+    @media (max-width: 768px) {
+      .venue-cell, thead th:last-child, td:last-child { display: none; }
+    }
+  </style>
+<script>
+(function(){
+  var t=localStorage.getItem('aa_theme')||'dark';
+  var a=localStorage.getItem('aa_accent')||'amber';
+  var f=localStorage.getItem('aa_font')||'md';
+  document.documentElement.setAttribute('data-theme',t);
+  document.documentElement.setAttribute('data-accent',a);
+  document.documentElement.setAttribute('data-font',f);
+})();
+</script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text">APEX ARENA</div>
+      <div class="logo-sub">Tournament</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="schedule.html" class="active">Schedule</a></li>
+    <li><a href="players.html">Players</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="register.html">Register</a></li>
+  </ul>
+</nav>
+
+<div class="page-content">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="section-label">Season 2025</span>
+      <h1 class="section-title">TOURNAMENT SCHEDULE</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle">All match times shown in GMT+5. Finals row highlighted in gold.</p>
+    </div>
+  </div>
+
+  <div class="schedule-content">
+    <div class="filter-tabs">
+      <button class="tab-btn active">All Matches</button>
+      <button class="tab-btn">Group Stage</button>
+      <button class="tab-btn">Knockouts</button>
+      <button class="tab-btn">Finals</button>
+    </div>
+
+    <!-- GROUP STAGE -->
+    <div class="stage-section">
+      <div class="stage-header">
+        <span class="stage-badge">Stage 1</span>
+        <span class="stage-name">GROUP STAGE</span>
+      </div>
+      <div class="match-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Match</th>
+              <th>Date & Time</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Venue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="match-num">G01</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Storm Knight</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Iron Hawk</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Jul 5 · 14:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 1</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Arena North</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-num">G02</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Nova Blaze</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Shadow Rex</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Jul 5 · 17:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 2</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Arena South</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-num">G03</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Frost Viper</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Solar Pyre</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Jul 6 · 14:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 0</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Arena East</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-num">G04</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Titan Rush</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Void Echo</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Jul 6 · 17:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 1</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Arena West</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUARTER FINALS -->
+    <div class="stage-section">
+      <div class="stage-header">
+        <span class="stage-badge">Stage 2</span>
+        <span class="stage-name">QUARTER FINALS</span>
+      </div>
+      <div class="match-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Match</th>
+              <th>Date & Time</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Venue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="match-num">Q01</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Storm Knight</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Frost Viper</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Aug 9 · 15:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 2</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Main Arena</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-num">Q02</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Nova Blaze</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Titan Rush</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Aug 9 · 18:00</span></td>
+              <td><span class="score"><span class="winner">3</span> – 1</span></td>
+              <td><span class="status status-completed">Completed</span></td>
+              <td><span class="venue-cell">Main Arena</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SEMI FINALS -->
+    <div class="stage-section">
+      <div class="stage-header">
+        <span class="stage-badge">Stage 3</span>
+        <span class="stage-name">SEMI FINALS</span>
+      </div>
+      <div class="match-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Match</th>
+              <th>Date & Time</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Venue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="match-num">SF1</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Storm Knight</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Nova Blaze</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Aug 16 · 16:00</span></td>
+              <td><span class="score">– &nbsp; –</span></td>
+              <td><span class="status status-upcoming">Upcoming</span></td>
+              <td><span class="venue-cell">Grand Arena</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-num">SF2</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">Frost Viper</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">Titan Rush</span>
+                </div>
+              </td>
+              <td><span class="date-cell">Aug 16 · 20:00</span></td>
+              <td><span class="score">– &nbsp; –</span></td>
+              <td><span class="status status-live">Live Now</span></td>
+              <td><span class="venue-cell">Grand Arena</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GRAND FINAL -->
+    <div class="stage-section">
+      <div class="stage-header">
+        <span class="stage-badge">Stage 4</span>
+        <span class="stage-name">GRAND FINAL</span>
+      </div>
+      <div class="match-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Match</th>
+              <th>Date & Time</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Venue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="final-match">
+              <td><span class="match-num">🏆</span></td>
+              <td>
+                <div class="player-vs">
+                  <span class="player-a">TBD Champion</span>
+                  <span class="vs-dot">VS</span>
+                  <span class="player-a">TBD Champion</span>
+                </div>
+                &nbsp;&nbsp;<span class="final-badge">🏆 Grand Final</span>
+              </td>
+              <td><span class="date-cell">Aug 23 · 19:00</span></td>
+              <td><span class="score">– &nbsp; –</span></td>
+              <td><span class="status status-upcoming">Upcoming</span></td>
+              <td><span class="venue-cell">Apex Stadium</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-final"></div> Final Match Row</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 <span>Apex Arena Tournament</span>. All rights reserved.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+<script src="theme.js"></script>
+</body>
+</html>

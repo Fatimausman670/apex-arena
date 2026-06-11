@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Contact — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.contact-wrap{max-width:1100px;margin:0 auto;padding:40px 5% 80px;display:grid;grid-template-columns:1fr 1.5fr;gap:60px;align-items:start;}
+.info-card-c{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;transition:var(--transition);}
+.info-card-c:hover{border-color:rgba(245,166,35,.3);transform:translateX(3px);}
+.ic-icon{width:40px;height:40px;background:var(--amber-glow);border:1px solid rgba(245,166,35,.25);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ic-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:3px;}
+.ic-val{font-size:13px;color:var(--text-muted);}
+.form-card-c{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;}
+.map-container{margin-top:28px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);}
+.map-placeholder{height:220px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--text-muted);}
+@media(max-width:800px){.contact-wrap{grid-template-columns:1fr;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="CONTACT">
+    <div class="page-header-inner">
+      <span class="section-label">Get in Touch</span>
+      <h1 class="section-title">CONTACT US</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle">Messages are saved to the database. Our team responds within 24 hours.</p>
+    </div>
+  </div>
+  <div class="contact-wrap">
+    <div>
+      <span class="section-label">Contact Info</span>
+      <h2 class="section-title" style="font-size:28px;">REACH THE TEAM</h2>
+      <div class="amber-line"></div>
+      <div style="margin-top:24px;">
+        <div class="info-card-c"><div class="ic-icon">📧</div><div><div class="ic-title">Email</div><div class="ic-val">info@apexarena.tournament</div></div></div>
+        <div class="info-card-c"><div class="ic-icon">📞</div><div><div class="ic-title">Hotline</div><div class="ic-val">+1 (800) 273-APEX · Mon–Sat 9AM–6PM</div></div></div>
+        <div class="info-card-c"><div class="ic-icon">📍</div><div><div class="ic-title">Address</div><div class="ic-val">Apex Stadium, 88 Champion Blvd, London, UK</div></div></div>
+        <div class="info-card-c"><div class="ic-icon">⏰</div><div><div class="ic-title">Response Time</div><div class="ic-val">Within 24 hours on business days</div></div></div>
+      </div>
+      <!-- Map API Integration (Google Maps Embed) -->
+      <div class="map-container">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.3278064622697!2d-0.12775968422955386!3d51.50329997963456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604b7b8f5e2b9%3A0x8b7c7c7c7c7c7c7c!2sWestminster%2C%20London!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk"
+          width="100%" height="220" style="border:0;display:block;filter:invert(0);"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Apex Arena Location"
+          id="mapFrame">
+        </iframe>
+      </div>
+      <script>
+        // Apply dark filter to map in dark mode
+        function applyMapTheme(){
+          var m=document.getElementById('mapFrame');if(!m)return;
+          m.style.filter=document.documentElement.getAttribute('data-theme')==='dark'?'invert(1) hue-rotate(180deg)':'none';
+        }
+        document.addEventListener('DOMContentLoaded',applyMapTheme);
+        new MutationObserver(applyMapTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+      </script>
+    </div>
+    <div class="form-card-c">
+      <div style="font-family:var(--font-display);font-size:24px;letter-spacing:2px;color:var(--text);margin-bottom:4px;">SEND A MESSAGE</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">All messages are stored in the database. Fields marked <span style="color:var(--amber)">*</span> are required.</div>
+      <form id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="form-group" id="grp-cn"><label>Full Name <span class="req">*</span></label><input type="text" id="cName" placeholder="Your name"/><div class="field-err">Name is required.</div></div>
+          <div class="form-group" id="grp-ce"><label>Email <span class="req">*</span></label><input type="email" id="cEmail" placeholder="you@example.com"/><div class="field-err">Valid email required.</div></div>
+        </div>
+        <div class="form-group" id="grp-cs"><label>Subject</label><div class="select-wrap"><select id="cSubject"><option>General Inquiry</option><option>Player Registration</option><option>Press / Media</option><option>Sponsorship</option><option>Technical Support</option></select></div></div>
+        <div class="form-group" id="grp-cm"><label>Message <span class="req">*</span></label><textarea id="cMsg" placeholder="Your message…" rows="5" maxlength="1000" oninput="document.getElementById('cCount').textContent=this.value.length"></textarea><div class="field-err">Message must be at least 10 characters.</div><div style="text-align:right;font-size:11px;color:var(--text-faint);margin-top:4px;"><span id="cCount">0</span>/1000</div></div>
+        <button type="submit" id="contactBtn" class="btn btn-primary" style="width:100%;justify-content:center;">📨 Send Message</button>
+      </form>
+    </div>
+  </div>
+</div>
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Messages stored via <span>POST /api/contacts</span>.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+function se(id,m){const g=document.getElementById('grp-'+id);g.classList.add('err');if(m){const f=g.querySelector('.field-err');if(f)f.textContent=m;}}
+function ce(id){document.getElementById('grp-'+id)?.classList.remove('err');}
+document.getElementById('contactForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const name=document.getElementById('cName').value.trim();
+  const email=document.getElementById('cEmail').value.trim();
+  const msg=document.getElementById('cMsg').value.trim();
+  const sub=document.getElementById('cSubject').value;
+  const rx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  ['cn','ce','cm'].forEach(ce);
+  let ok=true;
+  if(!name){se('cn','Name is required.');ok=false;}
+  if(!email||!rx.test(email)){se('ce','Valid email required.');ok=false;}
+  if(msg.length<10){se('cm','Message must be at least 10 characters.');ok=false;}
+  if(!ok)return;
+  const btn=document.getElementById('contactBtn');btn.disabled=true;btn.textContent='⏳ Sending…';
+  try{
+    await POST('/contacts',{name,email,subject:sub,message:msg});
+    showToastGlobal('✅','Message sent! We\'ll respond within 24 hours.','green');
+    document.getElementById('contactForm').reset();document.getElementById('cCount').textContent='0';
+  }catch(err){showToastGlobal('❌',err.message||'Failed to send','red');}
+  finally{btn.disabled=false;btn.textContent='📨 Send Message';}
+});
+</script></body></html>

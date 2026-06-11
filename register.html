@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tournament Registration — Apex Arena</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════
+       PAGE BACKGROUND
+    ══════════════════════════════════════════ */
+    .page-bg {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 70% 50% at 75% 15%, rgba(245,166,35,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 10% 85%, rgba(245,166,35,0.04) 0%, transparent 55%),
+        var(--navy);
+      padding: 100px 5% 80px;
+    }
+
+    .page-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* ══════════════════════════════════════════
+       PAGE HEADER
+    ══════════════════════════════════════════ */
+    .reg-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .reg-header .section-label { justify-content: center; display: block; }
+
+    /* ══════════════════════════════════════════
+       CAPACITY BAR
+    ══════════════════════════════════════════ */
+    .capacity-banner {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-md);
+      padding: 20px 28px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .capacity-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .cap-num {
+      font-family: var(--font-display);
+      font-size: 42px;
+      letter-spacing: 2px;
+      color: var(--amber);
+      line-height: 1;
+    }
+
+    .cap-denom {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--gray-500);
+      letter-spacing: 1px;
+    }
+
+    .cap-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray-300);
+    }
+
+    .capacity-bar-wrap {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .cap-track {
+      height: 10px;
+      background: var(--navy-light);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .cap-fill {
+      height: 100%;
+      background: var(--amber);
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1), background 0.4s ease;
+    }
+
+    .cap-fill.full { background: #e74c3c; }
+
+    .cap-status {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-300);
+      letter-spacing: 0.5px;
+    }
+
+    .cap-status.full-text { color: #e74c3c; }
+    .cap-status.open-text { color: #27ae60; }
+
+    /* ══════════════════════════════════════════
+       GRID LAYOUT: FORM  |  INVENTORY
+    ══════════════════════════════════════════ */
+    .reg-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ══════════════════════════════════════════
+       FORM PANEL
+    ══════════════════════════════════════════ */
+    .form-panel {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: sticky;
+      top: 88px;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .panel-sub {
+      font-size: 12px;
+      color: var(--gray-300);
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-300);
+      margin-bottom: 7px;
+    }
+
+    .form-group label .req { color: var(--amber); }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: var(--navy);
+      border: 1.5px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+      transition: var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group input::placeholder { color: var(--gray-500); }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px var(--amber-glow);
+    }
+
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--amber);
+      pointer-events: none;
+      font-size: 13px;
+    }
+
+    .select-wrap select option {
+      background: var(--navy-mid);
+    }
+
+    /* field error */
+    .field-err {
+      font-size: 11px;
+      color: #e74c3c;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .form-group.err input,
+    .form-group.err select { border-color: #e74c3c; }
+    .form-group.err .field-err { display: flex; }
+
+    /* form actions */
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-add {
+      flex: 1;
+      background: var(--amber);
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-add:hover:not(:disabled) {
+      background: #ffba3f;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245,166,35,0.4);
+    }
+
+    .btn-add:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-clear-all {
+      background: transparent;
+      color: var(--gray-300);
+      border: 1.5px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-clear-all:hover {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    /* full banner inside form */
+    .full-notice {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(231,76,60,0.1);
+      border: 1px solid rgba(231,76,60,0.3);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #e74c3c;
+    }
+
+    .full-notice.show { display: flex; }
+
+    /* ══════════════════════════════════════════
+       PARTICIPANTS PANEL
+    ══════════════════════════════════════════ */
+    .participants-panel {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--navy-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .panel-header-left h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+
+    .panel-header-left p {
+      font-size: 12px;
+      color: var(--gray-300);
+      margin-top: 2px;
+    }
+
+    .total-badge {
+      background: var(--amber-glow);
+      border: 1px solid rgba(245,166,35,0.3);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    /* search bar */
+    .search-wrap {
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--navy-light);
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: var(--navy);
+      border: 1.5px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 10px 14px 10px 36px;
+      outline: none;
+      transition: var(--transition);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5270' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+    }
+
+    .search-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-glow); }
+
+    /* list */
+    .participants-list {
+      padding: 16px 20px;
+      min-height: 200px;
+    }
+
+    /* empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-state p { font-size: 14px; }
+
+    /* player card */
+    .player-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      background: var(--navy);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      transition: var(--transition);
+      animation: slideIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-12px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+
+    .player-card:hover {
+      border-color: rgba(245,166,35,0.25);
+      transform: translateX(3px);
+    }
+
+    .player-num {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: var(--amber);
+      width: 32px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .player-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--navy-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .player-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-meta {
+      font-size: 12px;
+      color: var(--gray-300);
+      margin-top: 2px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* role badge */
+    .role-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .role-fragger    { background: rgba(231,76,60,0.15);   color: #e74c3c; }
+    .role-support    { background: rgba(52,152,219,0.15);  color: #3498db; }
+    .role-sniper     { background: rgba(155,89,182,0.15);  color: #9b59b6; }
+    .role-strategist { background: rgba(46,204,113,0.15);  color: #2ecc71; }
+    .role-wildcard   { background: rgba(245,166,35,0.15);  color: #f5a623; }
+
+    /* remove button */
+    .btn-remove {
+      background: transparent;
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      color: var(--gray-500);
+      font-size: 13px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      font-family: var(--font-body);
+    }
+
+    .btn-remove:hover {
+      border-color: #e74c3c;
+      color: #e74c3c;
+      background: rgba(231,76,60,0.08);
+    }
+
+    /* timestamp */
+    .reg-time {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    /* ══════════════════════════════════════════
+       INVENTORY SECTION  (Lab Demo)
+    ══════════════════════════════════════════ */
+    .inventory-section {
+      margin-top: 48px;
+    }
+
+    .inv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .inv-controls {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .inv-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .inv-field label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-300);
+    }
+
+    .inv-field input,
+    .inv-field select {
+      background: var(--navy);
+      border: 1.5px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      transition: var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+    }
+
+    .inv-field input::placeholder { color: var(--gray-500); }
+    .inv-field input:focus,
+    .inv-field select:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-glow); }
+
+    .inv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .inv-item {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition);
+      animation: slideIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .inv-item:hover {
+      border-color: rgba(245,166,35,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .inv-item-icon { font-size: 28px; }
+
+    .inv-item-name {
+      font-weight: 600;
+      color: var(--white);
+      font-size: 14px;
+    }
+
+    .inv-item-type {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
+    .type-weapon  { background: rgba(231,76,60,0.15);   color: #e74c3c; }
+    .type-armor   { background: rgba(52,152,219,0.15);  color: #3498db; }
+    .type-potion  { background: rgba(46,204,113,0.15);  color: #2ecc71; }
+    .type-magic   { background: rgba(155,89,182,0.15);  color: #9b59b6; }
+
+    .btn-del-item {
+      margin-top: auto;
+      background: transparent;
+      border: 1px solid var(--navy-light);
+      border-radius: var(--radius-sm);
+      color: var(--gray-500);
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .btn-del-item:hover {
+      border-color: #e74c3c;
+      color: #e74c3c;
+      background: rgba(231,76,60,0.08);
+    }
+
+    /* ══════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--navy-mid);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--white);
+      box-shadow: var(--shadow-card);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 999;
+      max-width: 320px;
+      border: 1px solid transparent;
+    }
+
+    .toast.show  { transform: translateY(0); opacity: 1; }
+    .toast.green { border-color: rgba(46,204,113,0.4); }
+    .toast.red   { border-color: rgba(231,76,60,0.4); }
+    .toast.amber { border-color: rgba(245,166,35,0.4); }
+
+    @media (max-width: 860px) {
+      .reg-grid { grid-template-columns: 1fr; }
+      .form-panel { position: static; }
+    }
+  </style>
+<script>
+(function(){
+  var t=localStorage.getItem('aa_theme')||'dark';
+  var a=localStorage.getItem('aa_accent')||'amber';
+  var f=localStorage.getItem('aa_font')||'md';
+  document.documentElement.setAttribute('data-theme',t);
+  document.documentElement.setAttribute('data-accent',a);
+  document.documentElement.setAttribute('data-font',f);
+})();
+</script>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text">APEX ARENA</div>
+      <div class="logo-sub">Tournament</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="players.html">Players</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="register.html" class="active">Register</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  MAIN PAGE                                 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page-bg">
+  <div class="page-inner">
+
+    <!-- Header -->
+    <div class="reg-header">
+      <span class="section-label">Season 2025 · Open Enrollment</span>
+      <h1 class="section-title">TOURNAMENT REGISTRATION</h1>
+      <div class="amber-line" style="margin: 16px auto;"></div>
+      <p class="section-subtitle" style="margin: 0 auto; text-align:center;">
+        Register your player slot. Maximum 10 competitors per tournament. Data saved automatically — page refresh safe.
+      </p>
+    </div>
+
+    <!-- Capacity Banner -->
+    <div class="capacity-banner">
+      <div class="capacity-stat">
+        <span class="cap-num" id="capCount">0</span>
+        <span class="cap-denom">/10</span>
+      </div>
+      <div>
+        <div class="cap-label">Slots Filled</div>
+      </div>
+      <div class="capacity-bar-wrap">
+        <div class="cap-track">
+          <div class="cap-fill" id="capBar" style="width:0%"></div>
+        </div>
+        <div class="cap-status open-text" id="capStatus">Registration Open</div>
+      </div>
+      <div style="margin-left:auto; text-align:right;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);">Spots Remaining</div>
+        <div style="font-family:var(--font-display);font-size:28px;letter-spacing:1px;color:var(--white);" id="spotsLeft">10</div>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="reg-grid">
+
+      <!-- ── FORM PANEL ── -->
+      <div class="form-panel">
+        <div class="panel-title">REGISTER PLAYER</div>
+        <div class="panel-sub">All fields are required. Max 10 players per tournament.</div>
+
+        <form id="regForm" novalidate>
+
+          <div class="form-group" id="grp-name">
+            <label>Player Name <span class="req">*</span></label>
+            <input type="text" id="pName" placeholder="Enter your full name or alias" />
+            <div class="field-err">✖ Player name cannot be empty.</div>
+          </div>
+
+          <div class="form-group" id="grp-email">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" id="pEmail" placeholder="you@example.com" />
+            <div class="field-err" id="err-email">✖ Please enter a valid email address.</div>
+          </div>
+
+          <div class="form-group" id="grp-country">
+            <label>Country <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="pCountry">
+                <option value="" disabled selected>Select your country</option>
+                <option>🇺🇸 United States</option>
+                <option>🇬🇧 United Kingdom</option>
+                <option>🇩🇪 Germany</option>
+                <option>🇯🇵 Japan</option>
+                <option>🇰🇷 South Korea</option>
+                <option>🇧🇷 Brazil</option>
+                <option>🇫🇷 France</option>
+                <option>🇦🇺 Australia</option>
+                <option>🇿🇦 South Africa</option>
+                <option>🌍 Other</option>
+              </select>
+            </div>
+            <div class="field-err">✖ Please select your country.</div>
+          </div>
+
+          <div class="form-group" id="grp-role">
+            <label>Play Style / Role <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="pRole">
+                <option value="" disabled selected>Select your role</option>
+                <option value="Fragger">⚔️ Fragger</option>
+                <option value="Support">🛡️ Support</option>
+                <option value="Sniper">🎯 Sniper</option>
+                <option value="Strategist">🧠 Strategist</option>
+                <option value="Wildcard">🃏 Wildcard</option>
+              </select>
+            </div>
+            <div class="field-err">✖ Please select a role.</div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-add" id="addBtn">
+              <span>⚡</span> Register Player
+            </button>
+            <button type="button" class="btn-clear-all" onclick="clearAll()">Clear All</button>
+          </div>
+
+          <div class="full-notice" id="fullNotice">
+            🔒 Tournament is full — 10/10 slots taken. Remove a player to register a new one.
+          </div>
+        </form>
+      </div>
+
+      <!-- ── PARTICIPANTS PANEL ── -->
+      <div class="participants-panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <h2>PARTICIPANTS LIST</h2>
+            <p>Saved in localStorage · Persists after page refresh</p>
+          </div>
+          <div class="total-badge" id="totalBadge">Total: 0 / 10</div>
+        </div>
+
+        <div class="search-wrap">
+          <input type="text" id="searchInput" placeholder="Search players by name or country…" oninput="renderParticipants()" />
+        </div>
+
+        <div class="participants-list" id="participantsList">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+    </div><!-- /reg-grid -->
+
+    <!-- ══════════════════════════════════════
+         GAME INVENTORY SECTION  (Lab Task)
+    ══════════════════════════════════════ -->
+    <div class="inventory-section">
+      <div class="inv-header">
+        <div>
+          <span class="section-label">Browser Storage Demo</span>
+          <h2 class="section-title" style="font-size:32px;">GAME INVENTORY</h2>
+          <div class="amber-line"></div>
+        </div>
+        <button onclick="clearInventory()" class="btn-clear-all" style="align-self:flex-end;">
+          🗑 Clear Inventory
+        </button>
+      </div>
+
+      <!-- Controls -->
+      <div class="inv-controls">
+        <div class="inv-field">
+          <label>Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. Dragon Sword" />
+        </div>
+        <div class="inv-field" style="max-width:180px;">
+          <label>Item Type</label>
+          <select id="itemType">
+            <option value="Weapon">⚔️ Weapon</option>
+            <option value="Armor">🛡️ Armor</option>
+            <option value="Potion">🧪 Potion</option>
+            <option value="Magic Item">✨ Magic Item</option>
+          </select>
+        </div>
+        <button onclick="addItem()" class="btn-add" style="width:auto;padding:10px 24px;flex-shrink:0;align-self:flex-end;">
+          + Add Item
+        </button>
+      </div>
+
+      <div class="inv-grid" id="inventoryList">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+
+  </div><!-- /page-inner -->
+</div><!-- /page-bg -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon" style="font-size:22px;">✅</span>
+  <div>
+    <div id="toastMsg" style="font-weight:600;font-size:14px;">Done</div>
+    <div id="toastSub" style="font-size:11px;color:var(--gray-300);margin-top:2px;"></div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 <span>Apex Arena Tournament</span>. All rights reserved. · Data stored in your browser's localStorage.</p>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────────
+   CONSTANTS & STATE
+───────────────────────────────────────── */
+const MAX_PLAYERS  = 10;
+const STORAGE_KEY  = 'apexArenaParticipants';
+const INV_KEY      = 'apexArenaInventory';
+
+/* ─────────────────────────────────────────
+   LOAD DATA FROM localStorage ON PAGE LOAD
+   (JSON.parse converts the stored string
+    back to a JavaScript array/object)
+───────────────────────────────────────── */
+let participants = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let inventory    = JSON.parse(localStorage.getItem(INV_KEY))    || [];
+
+/* ─────────────────────────────────────────
+   TOAST HELPER
+───────────────────────────────────────── */
+let toastTimer = null;
+function showToast(icon, msg, sub, type = 'green') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent  = msg;
+  document.getElementById('toastSub').textContent  = sub || '';
+  t.className = 'toast ' + type;
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+/* ─────────────────────────────────────────
+   CAPACITY UI
+───────────────────────────────────────── */
+function updateCapacity() {
+  const count = participants.length;
+  const pct   = (count / MAX_PLAYERS) * 100;
+
+  document.getElementById('capCount').textContent  = count;
+  document.getElementById('spotsLeft').textContent = MAX_PLAYERS - count;
+  document.getElementById('capBar').style.width    = pct + '%';
+  document.getElementById('totalBadge').textContent = `Total: ${count} / ${MAX_PLAYERS}`;
+
+  const bar    = document.getElementById('capBar');
+  const status = document.getElementById('capStatus');
+  const btn    = document.getElementById('addBtn');
+  const notice = document.getElementById('fullNotice');
+
+  if (count >= MAX_PLAYERS) {
+    bar.classList.add('full');
+    status.className    = 'cap-status full-text';
+    status.textContent  = '🔒 Tournament Full — No More Slots';
+    btn.disabled        = true;
+    notice.classList.add('show');
+  } else {
+    bar.classList.remove('full');
+    status.className    = 'cap-status open-text';
+    status.textContent  = `✅ Registration Open — ${MAX_PLAYERS - count} slot${MAX_PLAYERS - count !== 1 ? 's' : ''} available`;
+    btn.disabled        = false;
+    notice.classList.remove('show');
+  }
+}
+
+/* ─────────────────────────────────────────
+   ROLE → CSS CLASS
+───────────────────────────────────────── */
+const ROLE_CLASS = {
+  'Fragger':    'role-fragger',
+  'Support':    'role-support',
+  'Sniper':     'role-sniper',
+  'Strategist': 'role-strategist',
+  'Wildcard':   'role-wildcard',
+};
+
+const ROLE_EMOJI = {
+  'Fragger': '⚔️', 'Support': '🛡️', 'Sniper': '🎯',
+  'Strategist': '🧠', 'Wildcard': '🃏',
+};
+
+/* ─────────────────────────────────────────
+   RENDER PARTICIPANTS LIST
+───────────────────────────────────────── */
+function renderParticipants() {
+  const container = document.getElementById('participantsList');
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  const filtered = participants.filter(p =>
+    p.name.toLowerCase().includes(query) ||
+    p.country.toLowerCase().includes(query)
+  );
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${query ? '🔍' : '🎮'}</div>
+        <p>${query
+          ? `No players found matching "<strong style="color:var(--white)">${query}</strong>"`
+          : 'No players registered yet.<br>Be the first to sign up!'}</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach((p, idx) => {
+    const realIdx = participants.indexOf(p); // index in main array for deletion
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.innerHTML = `
+      <div class="player-num">#${idx + 1}</div>
+      <div class="player-avatar">${ROLE_EMOJI[p.role] || '🎮'}</div>
+      <div class="player-info">
+        <div class="player-name">${escHtml(p.name)}</div>
+        <div class="player-meta">
+          <span class="meta-tag">🌍 ${escHtml(p.country)}</span>
+          <span class="meta-tag">📧 ${escHtml(p.email)}</span>
+          <span class="reg-time" title="Registered at">⏱ ${p.regTime}</span>
+        </div>
+      </div>
+      <span class="role-badge ${ROLE_CLASS[p.role] || ''}">${p.role}</span>
+      <button class="btn-remove" onclick="removePlayer(${realIdx})">✖ Remove</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ─────────────────────────────────────────
+   SAVE TO localStorage
+   (JSON.stringify converts array → string)
+───────────────────────────────────────── */
+function saveParticipants() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+}
+
+/* ─────────────────────────────────────────
+   FORM VALIDATION HELPERS
+───────────────────────────────────────── */
+function setErr(id, msg) {
+  const grp = document.getElementById('grp-' + id);
+  grp.classList.add('err');
+  if (msg) grp.querySelector('.field-err').textContent = '✖ ' + msg;
+  document.getElementById(id === 'name' ? 'pName' : id === 'email' ? 'pEmail' : id === 'country' ? 'pCountry' : 'pRole')
+    .classList.add('shake');
+}
+
+function clearErr(id) {
+  document.getElementById('grp-' + id).classList.remove('err');
+}
+
+/* ─────────────────────────────────────────
+   ADD PLAYER — REGISTRATION
+───────────────────────────────────────── */
+document.getElementById('regForm').addEventListener('submit', function(e) {
+  e.preventDefault();   // ← prevents page reload on submit
+
+  const name    = document.getElementById('pName').value.trim();
+  const email   = document.getElementById('pEmail').value.trim();
+  const country = document.getElementById('pCountry').value;
+  const role    = document.getElementById('pRole').value;
+
+  let valid = true;
+  const emailRx = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+  clearErr('name');   clearErr('email');
+  clearErr('country'); clearErr('role');
+
+  if (!name)               { setErr('name', 'Player name cannot be empty.'); valid = false; }
+  if (!email)              { setErr('email', 'Email cannot be empty.');       valid = false; }
+  else if (!emailRx.test(email)) { setErr('email', 'Invalid email format.'); valid = false; }
+  if (!country)            { setErr('country', 'Please select your country.'); valid = false; }
+  if (!role)               { setErr('role', 'Please select a role.');          valid = false; }
+
+  if (!valid) return;
+
+  /* ── 10 PLAYER LIMIT ── */
+  if (participants.length >= MAX_PLAYERS) {
+    showToast('🔒', 'Tournament Full!', 'Remove a player to free up a slot.', 'red');
+    return;
+  }
+
+  /* ── DUPLICATE EMAIL CHECK ── */
+  if (participants.some(p => p.email.toLowerCase() === email.toLowerCase())) {
+    setErr('email', 'This email is already registered.');
+    showToast('⚠️', 'Already Registered', 'This email has a slot reserved.', 'amber');
+    return;
+  }
+
+  /* ── BUILD PLAYER OBJECT ── */
+  const now = new Date();
+  const player = {
+    name,
+    email,
+    country,
+    role,
+    regTime: now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) +
+             ' · ' + now.toLocaleDateString(),
+  };
+
+  /* ── PUSH TO ARRAY & SAVE ── */
+  participants.push(player);
+  saveParticipants();   // JSON.stringify → localStorage
+
+  /* ── RESET FORM ── */
+  document.getElementById('pName').value    = '';
+  document.getElementById('pEmail').value   = '';
+  document.getElementById('pCountry').value = '';
+  document.getElementById('pRole').value    = '';
+
+  updateCapacity();
+  renderParticipants();
+
+  const left = MAX_PLAYERS - participants.length;
+  showToast('✅', `${name} registered!`,
+    left > 0 ? `${left} slot${left !== 1 ? 's' : ''} remaining.` : 'Tournament is now full!',
+    'green');
+});
+
+/* ─────────────────────────────────────────
+   REMOVE A SINGLE PLAYER
+───────────────────────────────────────── */
+function removePlayer(idx) {
+  const removed = participants[idx];
+  participants.splice(idx, 1);
+  saveParticipants();
+  updateCapacity();
+  renderParticipants();
+  showToast('🗑', `${removed.name} removed`, 'Slot is now available.', 'amber');
+}
+
+/* ─────────────────────────────────────────
+   CLEAR ALL PARTICIPANTS
+───────────────────────────────────────── */
+function clearAll() {
+  if (participants.length === 0) { showToast('ℹ️', 'No players to remove.', '', 'amber'); return; }
+  if (!confirm(`Remove all ${participants.length} registered player(s)?`)) return;
+  participants = [];
+  localStorage.removeItem(STORAGE_KEY);
+  updateCapacity();
+  renderParticipants();
+  showToast('🗑', 'All registrations cleared.', 'The roster has been reset.', 'red');
+}
+
+/* ─────────────────────────────────────────
+   LIVE VALIDATION (clear errors on input)
+───────────────────────────────────────── */
+['pName','pEmail','pCountry','pRole'].forEach(id => {
+  document.getElementById(id).addEventListener('input',  () => {
+    const map = { pName:'name', pEmail:'email', pCountry:'country', pRole:'role' };
+    clearErr(map[id]);
+  });
+  document.getElementById(id).addEventListener('change', () => {
+    const map = { pName:'name', pEmail:'email', pCountry:'country', pRole:'role' };
+    clearErr(map[id]);
+  });
+});
+
+/* ══════════════════════════════════════════
+   GAME INVENTORY  (Lab Core Task)
+══════════════════════════════════════════ */
+const TYPE_ICONS  = { Weapon:'⚔️', Armor:'🛡️', Potion:'🧪', 'Magic Item':'✨' };
+const TYPE_CLASS  = { Weapon:'type-weapon', Armor:'type-armor', Potion:'type-potion', 'Magic Item':'type-magic' };
+
+/* Load inventory from localStorage on page load */
+displayItems();
+
+function addItem() {
+  const name = document.getElementById('itemName').value.trim();
+  const type = document.getElementById('itemType').value;
+
+  if (!name) {
+    showToast('⚠️', 'Enter an item name first!', '', 'amber');
+    document.getElementById('itemName').focus();
+    return;
+  }
+
+  /* Build item object */
+  const item = { name, type, addedAt: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) };
+
+  /* Push to array */
+  inventory.push(item);
+
+  /* Save to localStorage: object → JSON string */
+  localStorage.setItem(INV_KEY, JSON.stringify(inventory));
+
+  document.getElementById('itemName').value = '';
+  displayItems();
+  showToast('✅', `"${name}" added to inventory!`, `Type: ${type}`, 'green');
+}
+
+function displayItems() {
+  const container = document.getElementById('inventoryList');
+  container.innerHTML = '';
+
+  if (inventory.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;padding:40px 20px;">
+        <div class="empty-icon">🎒</div>
+        <p>Your inventory is empty.<br>Add your first item above.</p>
+      </div>`;
+    return;
+  }
+
+  for (let i = 0; i < inventory.length; i++) {
+    const div = document.createElement('div');
+    div.className = 'inv-item';
+    div.innerHTML = `
+      <div class="inv-item-icon">${TYPE_ICONS[inventory[i].type] || '📦'}</div>
+      <div class="inv-item-name">${escHtml(inventory[i].name)}</div>
+      <span class="inv-item-type ${TYPE_CLASS[inventory[i].type] || ''}">${inventory[i].type}</span>
+      <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">Added ${inventory[i].addedAt || ''}</div>
+      <button class="btn-del-item" onclick="deleteItem(${i})">🗑 Remove</button>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function deleteItem(idx) {
+  const removed = inventory[idx];
+  inventory.splice(idx, 1);
+  /* Save updated array back to localStorage */
+  localStorage.setItem(INV_KEY, JSON.stringify(inventory));
+  displayItems();
+  showToast('🗑', `"${removed.name}" removed`, '', 'amber');
+}
+
+function clearInventory() {
+  if (inventory.length === 0) { showToast('ℹ️', 'Inventory is already empty.', '', 'amber'); return; }
+  if (!confirm('Clear entire inventory?')) return;
+  inventory = [];
+  localStorage.removeItem(INV_KEY);
+  displayItems();
+  showToast('🗑', 'Inventory cleared.', '', 'red');
+}
+
+/* ─────────────────────────────────────────
+   XSS HELPER
+───────────────────────────────────────── */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ─────────────────────────────────────────
+   INIT
+───────────────────────────────────────── */
+updateCapacity();
+renderParticipants();
+</script>
+
+<script src="theme.js"></script>
+</body>
+</html>

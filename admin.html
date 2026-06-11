@@ -1,0 +1,479 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.admin-wrap{max-width:1200px;margin:0 auto;padding:36px 5% 80px;}
+.admin-tabs{display:flex;gap:6px;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap;}
+.admin-tab{padding:10px 20px;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--text-muted);font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);margin-bottom:-1px;}
+.admin-tab.active,.admin-tab:hover{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-panel{display:none;animation:fadeIn .25s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.admin-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.admin-bar-title{font-family:var(--font-display);font-size:22px;letter-spacing:2px;color:var(--text);}
+.data-table{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:24px;}
+.dt-head,.dt-row{display:grid;padding:12px 16px;gap:10px;align-items:center;border-bottom:1px solid var(--border);}
+.dt-head{background:var(--bg-light);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);}
+.dt-row:last-child{border-bottom:none;}
+.dt-row:hover{background:var(--bg-hover);}
+.dt-cell{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dt-cell.muted{color:var(--text-muted);}
+.dt-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.action-btn{padding:5px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer;border:1px solid;transition:var(--transition);font-family:var(--font-body);}
+.act-edit{background:rgba(52,152,219,.15);color:#3498db;border-color:rgba(52,152,219,.3);}
+.act-edit:hover{background:rgba(52,152,219,.25);}
+.act-del{background:rgba(231,76,60,.1);color:#e74c3c;border-color:rgba(231,76,60,.25);}
+.act-del:hover{background:rgba(231,76,60,.2);}
+.act-save{background:rgba(46,204,113,.15);color:#2ecc71;border-color:rgba(46,204,113,.3);}
+.act-save:hover{background:rgba(46,204,113,.25);}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;text-align:center;}
+.stat-box .sn{font-family:var(--font-display);font-size:32px;color:var(--amber);letter-spacing:2px;}
+.stat-box .sl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:4px;}
+.add-form{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:24px;margin-bottom:24px;}
+.add-form-title{font-family:var(--font-display);font-size:18px;letter-spacing:2px;color:var(--text);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.add-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.mini-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;display:block;}
+.mini-input{width:100%;background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;outline:none;transition:var(--transition);box-sizing:border-box;}
+.mini-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow);}
+.add-btn{background:var(--amber);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 20px;font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);margin-top:14px;}
+.add-btn:hover{filter:brightness(1.1);}
+.contact-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;margin-bottom:12px;}
+.contact-meta{display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+.contact-name{font-weight:600;font-size:14px;color:var(--text);}
+.contact-email{font-size:12px;color:var(--amber);}
+.contact-sub{font-size:11px;background:var(--amber-glow);border:1px solid rgba(245,166,35,.3);border-radius:999px;padding:2px 10px;color:var(--amber);}
+.contact-msg{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;color:var(--text-muted);}
+/* Edit modal */
+.edit-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.edit-modal-overlay.open{opacity:1;pointer-events:all;}
+.edit-modal{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes modalIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.edit-modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg-light);}
+.edit-modal-title{font-family:var(--font-display);font-size:20px;letter-spacing:2px;color:var(--text);}
+.edit-modal-close{background:transparent;border:1px solid var(--border);color:var(--text-muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;}
+.edit-modal-close:hover{border-color:var(--red);color:var(--red);}
+.edit-modal-body{padding:24px;}
+.edit-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.db-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;margin-bottom:16px;}
+.db-section h3{font-family:var(--font-display);font-size:16px;letter-spacing:2px;color:var(--amber);margin-bottom:12px;}
+.db-field{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:12px;}
+.db-field:last-child{border-bottom:none;}
+.db-field .field-name{color:var(--text);font-weight:600;font-family:monospace;}
+.db-field .field-type{color:var(--text-muted);}
+@media(max-width:800px){.stat-row{grid-template-columns:repeat(2,1fr);}.add-form-grid{grid-template-columns:1fr 1fr;}.edit-form-grid{grid-template-columns:1fr;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="ADMIN"><div class="page-header-inner"><span class="section-label">Admin Panel</span><h1 class="section-title">CONTROL CENTER</h1><div class="amber-line"></div><p class="section-subtitle">Full CRUD operations — Create, Read, Update, Delete on all 6 database tables.</p></div></div>
+  <div class="admin-wrap" id="adminContent">
+    <div class="access-denied"><div style="font-size:48px;margin-bottom:16px">🔒</div><h2 style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--text)">ADMIN ACCESS REQUIRED</h2><p style="margin:12px 0 24px">You must be logged in as an administrator.<br><small style="color:var(--text-faint)">Demo: admin@apex.com / Admin@123</small></p><a href="login.html" class="btn btn-primary">Log In as Admin</a></div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="edit-modal-overlay" id="editModalOverlay" onclick="if(event.target===this)closeEditModal()">
+  <div class="edit-modal">
+    <div class="edit-modal-head">
+      <div class="edit-modal-title" id="editModalTitle">EDIT RECORD</div>
+      <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="edit-modal-body" id="editModalBody"></div>
+  </div>
+</div>
+
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Admin CRUD via REST API — 6 Tables.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+let _users=[],_players=[],_tournaments=[],_contacts=[],_registrations=[];
+
+async function initAdmin(){
+  if(!Auth.isLoggedIn()||!Auth.isAdmin()){return;}
+  const wrap=document.getElementById('adminContent');
+  try{const r=await GET('/admin/users');_users=r.data;}catch{}
+  try{const r=await GET('/players');_players=r.data;}catch{}
+  try{const r=await GET('/tournaments');_tournaments=r.data;}catch{}
+  try{const r=await GET('/contacts');_contacts=r.data;}catch{}
+  try{const r=await GET('/registrations');_registrations=r.data;}catch{}
+  renderAdmin(wrap);
+}
+
+function renderAdmin(wrap){
+  wrap.innerHTML=`
+    <div class="stat-row">
+      <div class="stat-box"><div class="sn">${_users.length}</div><div class="sl">Users</div></div>
+      <div class="stat-box"><div class="sn">${_players.length}</div><div class="sl">Players</div></div>
+      <div class="stat-box"><div class="sn">${_tournaments.length}</div><div class="sl">Tournaments</div></div>
+      <div class="stat-box"><div class="sn">${_registrations.length}</div><div class="sl">Registrations</div></div>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('users',this)">👥 Users</button>
+      <button class="admin-tab" onclick="switchTab('players',this)">⚡ Players</button>
+      <button class="admin-tab" onclick="switchTab('tournaments',this)">🏆 Tournaments</button>
+      <button class="admin-tab" onclick="switchTab('registrations',this)">📋 Registrations</button>
+      <button class="admin-tab" onclick="switchTab('contacts',this)">📧 Messages</button>
+      <button class="admin-tab" onclick="switchTab('database',this)">🗄️ DB Schema</button>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-panel active" id="tab-users">
+      <div class="admin-bar"><div class="admin-bar-title">👥 USER MANAGEMENT</div><span style="font-size:12px;color:var(--text-muted)">CRUD: Create(signup) · Read · Update · Delete</span></div>
+      <div class="data-table">
+        <div class="dt-head" style="grid-template-columns:40px 1fr 1fr 100px 80px 140px">
+          <div>#</div><div>Name</div><div>Email</div><div>Role</div><div>Age</div><div>Actions</div>
+        </div>
+        <div id="usersBody">
+        ${_users.map((u,i)=>`<div class="dt-row" id="ur-${u.id}" style="grid-template-columns:40px 1fr 1fr 100px 80px 140px">
+          <div class="dt-cell muted">${i+1}</div>
+          <div class="dt-cell">${u.avatar||'🎮'} ${u.firstName} ${u.lastName}</div>
+          <div class="dt-cell muted">${u.email}</div>
+          <div class="dt-cell"><span style="font-size:11px;padding:2px 8px;border-radius:999px;${u.role==='admin'?'background:rgba(231,76,60,.15);color:#e74c3c':'background:var(--amber-glow);color:var(--amber)'}">
+            ${u.role}</span></div>
+          <div class="dt-cell muted">${u.age||'—'}</div>
+          <div class="dt-actions">
+            ${u.role!=='admin'?`
+              <button class="action-btn act-edit" onclick="editUser(${u.id})">✏️ Edit</button>
+              <button class="action-btn act-del" onclick="delUser(${u.id})">🗑</button>
+            `:'<span style="font-size:11px;color:var(--text-faint)">Protected</span>'}
+          </div>
+        </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYERS TAB -->
+    <div class="tab-panel" id="tab-players">
+      <div class="admin-bar"><div class="admin-bar-title">⚡ PLAYER MANAGEMENT</div><span style="font-size:12px;color:var(--text-muted)">CRUD: Create · Read · Update · Delete</span></div>
+      <div class="add-form">
+        <div class="add-form-title">➕ Add New Player
+          <button class="action-btn act-edit" onclick="toggleForm('addPlayerForm')">Toggle Form</button>
+        </div>
+        <div id="addPlayerForm" style="display:none">
+          <div class="add-form-grid">
+            <div><label class="mini-label">Name *</label><input class="mini-input" id="np-name" placeholder="Player Name"/></div>
+            <div><label class="mini-label">Handle *</label><input class="mini-input" id="np-handle" placeholder="@handle"/></div>
+            <div><label class="mini-label">Game *</label><select class="mini-input" id="np-game"><option>Valorant</option><option>PUBG</option><option>Fortnite</option></select></div>
+            <div><label class="mini-label">Rank *</label><select class="mini-input" id="np-rank"><option>Champion</option><option>Diamond</option><option>Platinum</option><option>Gold</option><option>Silver</option></select></div>
+            <div><label class="mini-label">Score</label><input class="mini-input" id="np-score" type="number" placeholder="5000"/></div>
+            <div><label class="mini-label">Win Rate %</label><input class="mini-input" id="np-wr" type="number" placeholder="60"/></div>
+            <div><label class="mini-label">Wins</label><input class="mini-input" id="np-wins" type="number" placeholder="0"/></div>
+            <div><label class="mini-label">Losses</label><input class="mini-input" id="np-losses" type="number" placeholder="0"/></div>
+            <div><label class="mini-label">Country</label><input class="mini-input" id="np-country" placeholder="USA"/></div>
+            <div><label class="mini-label">Flag Emoji</label><input class="mini-input" id="np-flag" placeholder="🇺🇸"/></div>
+            <div><label class="mini-label">Avatar Emoji</label><input class="mini-input" id="np-avatar" placeholder="⚡"/></div>
+            <div><label class="mini-label">Role</label><select class="mini-input" id="np-role"><option>Fragger</option><option>Support</option><option>Sniper</option><option>Strategist</option><option>Wildcard</option></select></div>
+          </div>
+          <div style="grid-column:1/-1;margin-top:8px"><label class="mini-label">Bio</label><input class="mini-input" id="np-bio" placeholder="Short bio…" style="width:100%"/></div>
+          <button class="add-btn" onclick="addPlayer()">➕ Add Player to Database</button>
+        </div>
+      </div>
+      <div class="data-table">
+        <div class="dt-head" style="grid-template-columns:40px 1fr 100px 100px 80px 80px 160px">
+          <div>#</div><div>Player</div><div>Game</div><div>Rank</div><div>Score</div><div>W/L</div><div>Actions</div>
+        </div>
+        <div id="playersTableBody">
+        ${_players.map((p,i)=>`<div class="dt-row" id="pr-${p.id}" style="grid-template-columns:40px 1fr 100px 100px 80px 80px 160px">
+          <div class="dt-cell muted">${i+1}</div>
+          <div class="dt-cell">${p.avatar} ${p.name}<br><small style="color:var(--text-faint)">${p.handle} · ${p.flag||''} ${p.country}</small></div>
+          <div class="dt-cell muted">${p.game}</div>
+          <div class="dt-cell">${p.rank}</div>
+          <div class="dt-cell" style="color:var(--amber)">${p.score?.toLocaleString()}</div>
+          <div class="dt-cell muted">${p.wins}/${p.losses}</div>
+          <div class="dt-actions">
+            <button class="action-btn act-edit" onclick="editPlayer(${p.id})">✏️ Edit</button>
+            <button class="action-btn act-del" onclick="delPlayer(${p.id})">🗑</button>
+          </div>
+        </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- TOURNAMENTS TAB -->
+    <div class="tab-panel" id="tab-tournaments">
+      <div class="admin-bar"><div class="admin-bar-title">🏆 TOURNAMENT MANAGEMENT</div><span style="font-size:12px;color:var(--text-muted)">CRUD: Create · Read · Update · Delete</span></div>
+      <div class="add-form">
+        <div class="add-form-title">➕ Add New Tournament
+          <button class="action-btn act-edit" onclick="toggleForm('addTournamentForm')">Toggle Form</button>
+        </div>
+        <div id="addTournamentForm" style="display:none">
+          <div class="add-form-grid">
+            <div><label class="mini-label">Name *</label><input class="mini-input" id="nt-name" placeholder="Tournament Name"/></div>
+            <div><label class="mini-label">Game *</label><select class="mini-input" id="nt-game"><option>All Games</option><option>Valorant</option><option>PUBG</option><option>Fortnite</option></select></div>
+            <div><label class="mini-label">Status</label><select class="mini-input" id="nt-status"><option>Upcoming</option><option>In Progress</option><option>Completed</option></select></div>
+            <div><label class="mini-label">Prize Pool ($) *</label><input class="mini-input" id="nt-prize" type="number" placeholder="10000"/></div>
+            <div><label class="mini-label">Max Players *</label><input class="mini-input" id="nt-max" type="number" placeholder="16"/></div>
+            <div><label class="mini-label">Entry Fee ($)</label><input class="mini-input" id="nt-fee" type="number" placeholder="15"/></div>
+            <div><label class="mini-label">Start Date *</label><input class="mini-input" id="nt-start" type="date"/></div>
+            <div><label class="mini-label">End Date *</label><input class="mini-input" id="nt-end" type="date"/></div>
+            <div><label class="mini-label">Format</label><select class="mini-input" id="nt-format"><option>Single Elimination</option><option>Double Elimination</option><option>Battle Royale Points</option><option>Solo Points System</option></select></div>
+          </div>
+          <div style="margin-top:8px"><label class="mini-label">Location</label><input class="mini-input" id="nt-location" placeholder="Online — Global" style="width:100%"/></div>
+          <button class="add-btn" onclick="addTournament()">➕ Add Tournament to Database</button>
+        </div>
+      </div>
+      <div class="data-table">
+        <div class="dt-head" style="grid-template-columns:1fr 100px 90px 100px 70px 170px">
+          <div>Name</div><div>Game</div><div>Prize</div><div>Status</div><div>Players</div><div>Actions</div>
+        </div>
+        <div id="tournamentsTableBody">
+        ${_tournaments.map(t=>`<div class="dt-row" id="tr-${t.id}" style="grid-template-columns:1fr 100px 90px 100px 70px 170px">
+          <div class="dt-cell">${t.name}<br><small style="color:var(--text-faint)">${t.startDate} → ${t.endDate}</small></div>
+          <div class="dt-cell muted">${t.game}</div>
+          <div class="dt-cell" style="color:var(--amber)">$${t.prizePool?.toLocaleString()}</div>
+          <div class="dt-cell"><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg-light)">${t.status}</span></div>
+          <div class="dt-cell muted">${t.regCount||0}/${t.maxPlayers}</div>
+          <div class="dt-actions">
+            <button class="action-btn act-edit" onclick="editTournament(${t.id})">✏️ Edit</button>
+            <button class="action-btn act-del" onclick="delTournament(${t.id})">🗑</button>
+          </div>
+        </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRATIONS TAB -->
+    <div class="tab-panel" id="tab-registrations">
+      <div class="admin-bar"><div class="admin-bar-title">📋 REGISTRATION RECORDS</div><span style="font-size:12px;color:var(--text-muted)">Read · Delete</span></div>
+      <div class="data-table">
+        <div class="dt-head" style="grid-template-columns:1fr 1fr 120px 100px 120px 80px">
+          <div>Player</div><div>Email</div><div>Tournament</div><div>Payment</div><div>Date</div><div>Action</div>
+        </div>
+        ${_registrations.length?_registrations.map(r=>`<div class="dt-row" id="rg-${r.id}" style="grid-template-columns:1fr 1fr 120px 100px 120px 80px">
+          <div class="dt-cell">${r.playerName}</div>
+          <div class="dt-cell muted">${r.email}</div>
+          <div class="dt-cell muted">T#${r.tournamentId}</div>
+          <div class="dt-cell"><span style="font-size:11px;padding:2px 8px;border-radius:999px;${r.paymentStatus==='Paid'?'background:rgba(46,204,113,.15);color:#2ecc71':'background:rgba(245,166,35,.15);color:#f5a623'}">${r.paymentStatus}</span></div>
+          <div class="dt-cell muted">${new Date(r.registeredAt).toLocaleDateString()}</div>
+          <div class="dt-actions"><button class="action-btn act-del" onclick="delReg(${r.id})">🗑</button></div>
+        </div>`).join(''):'<div style="padding:32px;text-align:center;color:var(--text-muted)">No registrations yet.</div>'}
+      </div>
+    </div>
+
+    <!-- CONTACTS TAB -->
+    <div class="tab-panel" id="tab-contacts">
+      <div class="admin-bar"><div class="admin-bar-title">📧 CONTACT MESSAGES</div><span style="font-size:12px;color:var(--text-muted)">Read · Delete</span></div>
+      ${_contacts.length?_contacts.map(c=>`
+        <div class="contact-card" id="cc-${c.id}">
+          <div class="contact-meta">
+            <span class="contact-name">${c.name}</span>
+            <span class="contact-email">${c.email}</span>
+            <span class="contact-sub">${c.subject}</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--text-faint)">${new Date(c.createdAt).toLocaleString()}</span>
+            <button class="action-btn act-del" onclick="delContact(${c.id})">🗑 Delete</button>
+          </div>
+          <div class="contact-msg">${c.message}</div>
+        </div>`).join(''):'<div style="padding:32px;text-align:center;color:var(--text-muted)">No messages yet.</div>'}
+    </div>
+
+    <!-- DATABASE SCHEMA TAB -->
+    <div class="tab-panel" id="tab-database">
+      <div class="admin-bar"><div class="admin-bar-title">🗄️ DATABASE SCHEMA — 6 TABLES</div></div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Relational JSON file database (db.json) simulating 6 tables with full CRUD operations via REST API.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="db-section">
+          <h3>TABLE 1: users</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['firstName','VARCHAR(50)'],['lastName','VARCHAR(50)'],['email','VARCHAR(100) UNIQUE'],['password','VARCHAR(255) bcrypt'],['role','ENUM admin|player'],['avatar','VARCHAR(10) emoji'],['theme','VARCHAR(10)'],['age','INTEGER'],['createdAt','TIMESTAMP']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+        <div class="db-section">
+          <h3>TABLE 2: players</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['name','VARCHAR(100)'],['handle','VARCHAR(50)'],['game','VARCHAR(50)'],['rank','VARCHAR(30)'],['tier','INTEGER'],['score','INTEGER'],['wins','INTEGER'],['losses','INTEGER'],['winRate','INTEGER %'],['country','VARCHAR(50)'],['flag','VARCHAR(10)'],['role','VARCHAR(30)'],['status','VARCHAR(20)'],['avatar','VARCHAR(10)'],['attackStat','INTEGER 0-100'],['defenseStat','INTEGER 0-100'],['bio','TEXT'],['teamId','FK → teams.id']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+        <div class="db-section">
+          <h3>TABLE 3: tournaments</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['name','VARCHAR(100)'],['game','VARCHAR(50)'],['status','ENUM Upcoming|In Progress|Completed'],['stage','VARCHAR(50)'],['startDate','DATE'],['endDate','DATE'],['prizePool','INTEGER'],['maxPlayers','INTEGER'],['format','VARCHAR(50)'],['location','VARCHAR(100)'],['fee','INTEGER'],['createdAt','TIMESTAMP']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+        <div class="db-section">
+          <h3>TABLE 4: registrations</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['tournamentId','FK → tournaments.id'],['playerName','VARCHAR(100)'],['email','VARCHAR(100)'],['phone','VARCHAR(20)'],['paymentMethod','VARCHAR(20)'],['paymentStatus','ENUM Paid|Pending'],['paymentRef','VARCHAR(50)'],['registeredAt','TIMESTAMP']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+        <div class="db-section">
+          <h3>TABLE 5: contacts</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['name','VARCHAR(100)'],['email','VARCHAR(100)'],['subject','VARCHAR(100)'],['message','TEXT'],['createdAt','TIMESTAMP'],['read','BOOLEAN']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+        <div class="db-section">
+          <h3>TABLE 6: teams</h3>
+          ${[['id','INTEGER PRIMARY KEY'],['name','VARCHAR(100)'],['tag','VARCHAR(10)'],['icon','VARCHAR(10)'],['game','VARCHAR(50)'],['region','VARCHAR(50)'],['wins','INTEGER'],['losses','INTEGER'],['winRate','INTEGER'],['ranking','INTEGER'],['captain','VARCHAR(100)'],['members[]','FK[] → players.id']].map(([f,t])=>`<div class="db-field"><span class="field-name">${f}</span><span class="field-type">${t}</span></div>`).join('')}
+        </div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;margin-top:16px;">
+        <h3 style="font-family:var(--font-display);font-size:16px;letter-spacing:2px;color:var(--amber);margin-bottom:12px;">CRUD COVERAGE MATRIX</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;font-size:12px;text-align:center;">
+          <div style="font-weight:700;color:var(--text-faint);padding:8px;border-bottom:1px solid var(--border)">Table</div>
+          <div style="font-weight:700;color:#2ecc71;padding:8px;border-bottom:1px solid var(--border)">CREATE</div>
+          <div style="font-weight:700;color:#3498db;padding:8px;border-bottom:1px solid var(--border)">READ</div>
+          <div style="font-weight:700;color:#f5a623;padding:8px;border-bottom:1px solid var(--border)">UPDATE</div>
+          <div style="font-weight:700;color:#e74c3c;padding:8px;border-bottom:1px solid var(--border)">DELETE</div>
+          ${[['users','signup','admin/me','admin panel','admin panel'],['players','admin panel','public API','admin panel','admin panel'],['tournaments','admin panel','public API','admin panel','admin panel'],['registrations','tournament page','admin panel','—','admin panel'],['contacts','contact form','admin panel','—','admin panel'],['teams','seeded','public API','—','—']].map(([t,c,r,u,d])=>`
+          <div style="color:var(--text);padding:6px;border-bottom:1px dashed var(--border)">${t}</div>
+          <div style="color:#2ecc71;padding:6px;border-bottom:1px dashed var(--border);font-size:11px">${c}</div>
+          <div style="color:#3498db;padding:6px;border-bottom:1px dashed var(--border);font-size:11px">${r}</div>
+          <div style="color:${u==='—'?'var(--text-faint)':'#f5a623'};padding:6px;border-bottom:1px dashed var(--border);font-size:11px">${u}</div>
+          <div style="color:${d==='—'?'var(--text-faint)':'#e74c3c'};padding:6px;border-bottom:1px dashed var(--border);font-size:11px">${d}</div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function switchTab(name,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');el.classList.add('active');
+}
+function toggleForm(id){const f=document.getElementById(id);f.style.display=f.style.display==='none'?'block':'none';}
+
+// ── Edit Modal ──
+function openEditModal(title,html){
+  document.getElementById('editModalTitle').textContent=title;
+  document.getElementById('editModalBody').innerHTML=html;
+  document.getElementById('editModalOverlay').classList.add('open');
+}
+function closeEditModal(){document.getElementById('editModalOverlay').classList.remove('open');}
+
+// ── USERS CRUD ──
+function editUser(id){
+  const u=_users.find(x=>x.id===id);if(!u)return;
+  openEditModal('EDIT USER',`
+    <div class="edit-form-grid">
+      <div><label class="mini-label">First Name</label><input class="mini-input" id="eu-first" value="${u.firstName}"/></div>
+      <div><label class="mini-label">Last Name</label><input class="mini-input" id="eu-last" value="${u.lastName}"/></div>
+      <div><label class="mini-label">Age</label><input class="mini-input" id="eu-age" type="number" value="${u.age||''}"/></div>
+      <div><label class="mini-label">Avatar</label><input class="mini-input" id="eu-avatar" value="${u.avatar||'🎮'}"/></div>
+      <div><label class="mini-label">Role</label><select class="mini-input" id="eu-role"><option ${u.role==='player'?'selected':''}>player</option><option ${u.role==='admin'?'selected':''}>admin</option></select></div>
+      <div><label class="mini-label">Theme</label><select class="mini-input" id="eu-theme"><option ${u.theme==='dark'?'selected':''}>dark</option><option ${u.theme==='light'?'selected':''}>light</option></select></div>
+    </div>
+    <button class="add-btn" style="margin-top:16px" onclick="saveUser(${id})">💾 Save Changes</button>
+  `);
+}
+async function saveUser(id){
+  const body={firstName:document.getElementById('eu-first').value,lastName:document.getElementById('eu-last').value,age:parseInt(document.getElementById('eu-age').value)||null,avatar:document.getElementById('eu-avatar').value,role:document.getElementById('eu-role').value,theme:document.getElementById('eu-theme').value};
+  try{
+    await PUT('/admin/users/'+id,body);
+    const idx=_users.findIndex(u=>u.id===id);
+    if(idx!==-1)_users[idx]={..._users[idx],...body};
+    closeEditModal();renderAdmin(document.getElementById('adminContent'));
+    showToastGlobal('✅','User updated!','green');
+  }catch(e){showToastGlobal('❌',e.message,'red');}
+}
+async function delUser(id){
+  if(!confirm('Delete this user?'))return;
+  try{await DELETE('/admin/users/'+id);_users=_users.filter(u=>u.id!==id);document.getElementById('ur-'+id)?.remove();showToastGlobal('🗑','User deleted','amber');}
+  catch(e){showToastGlobal('❌',e.message,'red');}
+}
+
+// ── PLAYERS CRUD ──
+async function addPlayer(){
+  const body={name:document.getElementById('np-name').value,handle:document.getElementById('np-handle').value,game:document.getElementById('np-game').value,rank:document.getElementById('np-rank').value,score:parseInt(document.getElementById('np-score').value)||1000,winRate:parseInt(document.getElementById('np-wr').value)||0,wins:parseInt(document.getElementById('np-wins').value)||0,losses:parseInt(document.getElementById('np-losses').value)||0,country:document.getElementById('np-country').value||'Unknown',flag:document.getElementById('np-flag').value||'🌍',avatar:document.getElementById('np-avatar').value||'🎮',role:document.getElementById('np-role').value,bio:document.getElementById('np-bio').value||'',tier:99,status:'Active',attackStat:50,defenseStat:50};
+  if(!body.name||!body.handle){showToastGlobal('❌','Name and Handle are required','red');return;}
+  try{
+    const r=await POST('/players',body);_players.push(r.data);
+    renderAdmin(document.getElementById('adminContent'));
+    switchTab('players',document.querySelector('.admin-tab:nth-child(2)'));
+    showToastGlobal('✅','Player added to database!','green');
+  }catch(e){showToastGlobal('❌',e.message,'red');}
+}
+function editPlayer(id){
+  const p=_players.find(x=>x.id===id);if(!p)return;
+  openEditModal('EDIT PLAYER',`
+    <div class="edit-form-grid">
+      <div><label class="mini-label">Name</label><input class="mini-input" id="ep-name" value="${p.name}"/></div>
+      <div><label class="mini-label">Handle</label><input class="mini-input" id="ep-handle" value="${p.handle}"/></div>
+      <div><label class="mini-label">Game</label><select class="mini-input" id="ep-game"><option ${p.game==='Valorant'?'selected':''}>Valorant</option><option ${p.game==='PUBG'?'selected':''}>PUBG</option><option ${p.game==='Fortnite'?'selected':''}>Fortnite</option></select></div>
+      <div><label class="mini-label">Rank</label><select class="mini-input" id="ep-rank"><option ${p.rank==='Champion'?'selected':''}>Champion</option><option ${p.rank==='Diamond'?'selected':''}>Diamond</option><option ${p.rank==='Platinum'?'selected':''}>Platinum</option><option ${p.rank==='Gold'?'selected':''}>Gold</option><option ${p.rank==='Silver'?'selected':''}>Silver</option></select></div>
+      <div><label class="mini-label">Score</label><input class="mini-input" id="ep-score" type="number" value="${p.score}"/></div>
+      <div><label class="mini-label">Win Rate %</label><input class="mini-input" id="ep-wr" type="number" value="${p.winRate}"/></div>
+      <div><label class="mini-label">Wins</label><input class="mini-input" id="ep-wins" type="number" value="${p.wins}"/></div>
+      <div><label class="mini-label">Losses</label><input class="mini-input" id="ep-losses" type="number" value="${p.losses}"/></div>
+      <div><label class="mini-label">Country</label><input class="mini-input" id="ep-country" value="${p.country}"/></div>
+      <div><label class="mini-label">Flag</label><input class="mini-input" id="ep-flag" value="${p.flag||'🌍'}"/></div>
+      <div><label class="mini-label">Avatar</label><input class="mini-input" id="ep-avatar" value="${p.avatar}"/></div>
+      <div><label class="mini-label">Role</label><select class="mini-input" id="ep-role"><option ${p.role==='Fragger'?'selected':''}>Fragger</option><option ${p.role==='Support'?'selected':''}>Support</option><option ${p.role==='Sniper'?'selected':''}>Sniper</option><option ${p.role==='Strategist'?'selected':''}>Strategist</option><option ${p.role==='Wildcard'?'selected':''}>Wildcard</option></select></div>
+    </div>
+    <div style="margin-top:10px"><label class="mini-label">Bio</label><input class="mini-input" id="ep-bio" value="${p.bio||''}" style="width:100%"/></div>
+    <button class="add-btn" style="margin-top:16px" onclick="savePlayer(${id})">💾 Save Changes</button>
+  `);
+}
+async function savePlayer(id){
+  const body={name:document.getElementById('ep-name').value,handle:document.getElementById('ep-handle').value,game:document.getElementById('ep-game').value,rank:document.getElementById('ep-rank').value,score:parseInt(document.getElementById('ep-score').value),winRate:parseInt(document.getElementById('ep-wr').value),wins:parseInt(document.getElementById('ep-wins').value),losses:parseInt(document.getElementById('ep-losses').value),country:document.getElementById('ep-country').value,flag:document.getElementById('ep-flag').value,avatar:document.getElementById('ep-avatar').value,role:document.getElementById('ep-role').value,bio:document.getElementById('ep-bio').value};
+  try{
+    await PUT('/players/'+id,body);
+    const idx=_players.findIndex(p=>p.id===id);
+    if(idx!==-1)_players[idx]={..._players[idx],...body};
+    closeEditModal();renderAdmin(document.getElementById('adminContent'));
+    showToastGlobal('✅','Player updated in database!','green');
+  }catch(e){showToastGlobal('❌',e.message,'red');}
+}
+async function delPlayer(id){
+  if(!confirm('Delete this player?'))return;
+  try{await DELETE('/players/'+id);_players=_players.filter(p=>p.id!==id);document.getElementById('pr-'+id)?.remove();showToastGlobal('🗑','Player deleted','amber');}
+  catch(e){showToastGlobal('❌',e.message,'red');}
+}
+
+// ── TOURNAMENTS CRUD ──
+async function addTournament(){
+  const body={name:document.getElementById('nt-name').value,game:document.getElementById('nt-game').value,status:document.getElementById('nt-status').value,prizePool:parseInt(document.getElementById('nt-prize').value),maxPlayers:parseInt(document.getElementById('nt-max').value),fee:parseInt(document.getElementById('nt-fee').value)||0,startDate:document.getElementById('nt-start').value,endDate:document.getElementById('nt-end').value,format:document.getElementById('nt-format').value,location:document.getElementById('nt-location').value||'Online',stage:'Registration'};
+  if(!body.name||!body.prizePool||!body.maxPlayers||!body.startDate||!body.endDate){showToastGlobal('❌','Please fill all required fields','red');return;}
+  try{
+    const r=await POST('/tournaments',body);_tournaments.push(r.data);
+    renderAdmin(document.getElementById('adminContent'));
+    showToastGlobal('✅','Tournament added to database!','green');
+  }catch(e){showToastGlobal('❌',e.message,'red');}
+}
+function editTournament(id){
+  const t=_tournaments.find(x=>x.id===id);if(!t)return;
+  openEditModal('EDIT TOURNAMENT',`
+    <div class="edit-form-grid">
+      <div style="grid-column:1/-1"><label class="mini-label">Name</label><input class="mini-input" id="et-name" value="${t.name}" style="width:100%"/></div>
+      <div><label class="mini-label">Game</label><select class="mini-input" id="et-game"><option ${t.game==='All Games'?'selected':''}>All Games</option><option ${t.game==='Valorant'?'selected':''}>Valorant</option><option ${t.game==='PUBG'?'selected':''}>PUBG</option><option ${t.game==='Fortnite'?'selected':''}>Fortnite</option></select></div>
+      <div><label class="mini-label">Status</label><select class="mini-input" id="et-status"><option ${t.status==='Upcoming'?'selected':''}>Upcoming</option><option ${t.status==='In Progress'?'selected':''}>In Progress</option><option ${t.status==='Completed'?'selected':''}>Completed</option></select></div>
+      <div><label class="mini-label">Prize Pool ($)</label><input class="mini-input" id="et-prize" type="number" value="${t.prizePool}"/></div>
+      <div><label class="mini-label">Max Players</label><input class="mini-input" id="et-max" type="number" value="${t.maxPlayers}"/></div>
+      <div><label class="mini-label">Entry Fee ($)</label><input class="mini-input" id="et-fee" type="number" value="${t.fee||0}"/></div>
+      <div><label class="mini-label">Stage</label><input class="mini-input" id="et-stage" value="${t.stage||'Registration'}"/></div>
+      <div><label class="mini-label">Start Date</label><input class="mini-input" id="et-start" type="date" value="${t.startDate}"/></div>
+      <div><label class="mini-label">End Date</label><input class="mini-input" id="et-end" type="date" value="${t.endDate}"/></div>
+    </div>
+    <div style="margin-top:10px"><label class="mini-label">Location</label><input class="mini-input" id="et-location" value="${t.location||''}" style="width:100%"/></div>
+    <button class="add-btn" style="margin-top:16px" onclick="saveTournament(${id})">💾 Save Changes</button>
+  `);
+}
+async function saveTournament(id){
+  const body={name:document.getElementById('et-name').value,game:document.getElementById('et-game').value,status:document.getElementById('et-status').value,prizePool:parseInt(document.getElementById('et-prize').value),maxPlayers:parseInt(document.getElementById('et-max').value),fee:parseInt(document.getElementById('et-fee').value)||0,stage:document.getElementById('et-stage').value,startDate:document.getElementById('et-start').value,endDate:document.getElementById('et-end').value,location:document.getElementById('et-location').value};
+  try{
+    await PUT('/tournaments/'+id,body);
+    const idx=_tournaments.findIndex(t=>t.id===id);
+    if(idx!==-1)_tournaments[idx]={..._tournaments[idx],...body};
+    closeEditModal();renderAdmin(document.getElementById('adminContent'));
+    showToastGlobal('✅','Tournament updated in database!','green');
+  }catch(e){showToastGlobal('❌',e.message,'red');}
+}
+async function delTournament(id){
+  if(!confirm('Delete this tournament?'))return;
+  try{await DELETE('/tournaments/'+id);_tournaments=_tournaments.filter(t=>t.id!==id);document.getElementById('tr-'+id)?.remove();showToastGlobal('🗑','Tournament deleted','amber');}
+  catch(e){showToastGlobal('❌',e.message,'red');}
+}
+
+// ── REGISTRATIONS ──
+async function delReg(id){
+  if(!confirm('Delete this registration?'))return;
+  try{await DELETE('/registrations/'+id);_registrations=_registrations.filter(r=>r.id!==id);document.getElementById('rg-'+id)?.remove();showToastGlobal('🗑','Registration deleted','amber');}
+  catch(e){showToastGlobal('❌',e.message,'red');}
+}
+
+// ── CONTACTS ──
+async function delContact(id){
+  try{await DELETE('/contacts/'+id);_contacts=_contacts.filter(c=>c.id!==id);document.getElementById('cc-'+id)?.remove();showToastGlobal('🗑','Message deleted','amber');}
+  catch(e){showToastGlobal('❌',e.message,'red');}
+}
+
+document.addEventListener('DOMContentLoaded',initAdmin);
+</script></body></html>

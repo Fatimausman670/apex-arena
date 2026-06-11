@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Leaderboard — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.lb-wrap{max-width:1000px;margin:0 auto;padding:40px 5% 80px;}
+.lb-filters{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+.lb-filter-btn{padding:7px 18px;border-radius:999px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);}
+.lb-filter-btn.active,.lb-filter-btn:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
+.lb-table{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+.lb-row{display:grid;grid-template-columns:60px 1fr 120px 120px 100px 100px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);transition:var(--transition);gap:12px;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--bg-hover);}
+.lb-row.header{background:var(--bg-light);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);}
+.lb-row.top1{background:linear-gradient(90deg,rgba(255,180,0,0.1),transparent);}
+.lb-row.top2{background:linear-gradient(90deg,rgba(149,165,166,0.07),transparent);}
+.lb-row.top3{background:linear-gradient(90deg,rgba(205,127,50,0.07),transparent);}
+.lb-rank{font-family:var(--font-display);font-size:22px;color:var(--text-faint);text-align:center;}
+.lb-rank.r1{color:#ffd700;font-size:26px;} .lb-rank.r2{color:#c0c0c0;font-size:24px;} .lb-rank.r3{color:#cd7f32;font-size:24px;}
+.lb-player{display:flex;align-items:center;gap:12px;}
+.lb-av{font-size:28px;}
+.lb-pname{font-weight:600;font-size:15px;color:var(--text);}
+.lb-handle{font-size:11px;color:var(--amber);}
+.lb-score{font-family:var(--font-display);font-size:20px;color:var(--amber);letter-spacing:1px;}
+.lb-wr{font-size:14px;font-weight:600;color:var(--text);}
+.lb-game{font-size:12px;color:var(--text-muted);}
+.lb-country{font-size:13px;}
+.trend-up{color:#2ecc71;font-size:12px;font-weight:600;} .trend-same{color:var(--text-faint);font-size:12px;}
+.podium{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px;margin-bottom:36px;align-items:end;}
+.pod-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px 16px;text-align:center;transition:var(--transition);}
+.pod-card:hover{transform:translateY(-4px);}
+.pod-card.p1{border-color:rgba(255,215,0,.35);background:linear-gradient(160deg,rgba(255,215,0,.06),var(--bg-card));}
+.pod-card.p2{border-color:rgba(192,192,192,.25);}
+.pod-card.p3{border-color:rgba(205,127,50,.25);}
+.pod-medal{font-size:36px;margin-bottom:8px;}
+.pod-av{font-size:48px;margin:8px 0;}
+.pod-name{font-family:var(--font-display);font-size:18px;letter-spacing:2px;color:var(--text);}
+.pod-score{font-family:var(--font-display);font-size:24px;color:var(--amber);margin-top:4px;}
+.pod-info{font-size:11px;color:var(--text-muted);margin-top:4px;}
+@media(max-width:700px){.lb-row{grid-template-columns:48px 1fr 90px 80px;}.lb-row .lb-game,.lb-row .lb-country{display:none;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="LEADERBOARD">
+    <div class="page-header-inner">
+      <span class="section-label">Season 2025</span>
+      <h1 class="section-title">LEADERBOARD</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle">Live rankings pulled from the API. Scores update after every match.</p>
+    </div>
+  </div>
+  <div class="lb-wrap">
+    <div class="lb-filters">
+      <button class="lb-filter-btn active" onclick="setFilter('All',this)">🌍 All Games</button>
+      <button class="lb-filter-btn" onclick="setFilter('Valorant',this)">🎯 Valorant</button>
+      <button class="lb-filter-btn" onclick="setFilter('PUBG',this)">🪖 PUBG</button>
+      <button class="lb-filter-btn" onclick="setFilter('Fortnite',this)">⛏️ Fortnite</button>
+    </div>
+    <!-- Podium top 3 -->
+    <div class="podium" id="podium"></div>
+    <!-- Full table -->
+    <div class="lb-table">
+      <div class="lb-row header">
+        <div>Rank</div><div>Player</div><div>Score</div><div>Win Rate</div><div>Game</div><div>Country</div>
+      </div>
+      <div id="lbBody"><div style="text-align:center;padding:40px;color:var(--text-muted);">⏳ Loading…</div></div>
+    </div>
+  </div>
+</div>
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Rankings from <span>GET /api/leaderboard</span>.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+let allLB=[],activeGame='All';
+const MEDALS=['🥇','🥈','🥉'];
+const GI={'Valorant':'🎯','PUBG':'🪖','Fortnite':'⛏️'};
+
+async function loadLB(){
+  try{const r=await GET('/leaderboard?limit=20');allLB=r.data;}
+  catch{allLB=[
+    {id:1,name:'Storm Knight',handle:'@storm_k',game:'Valorant',rank:'Champion',score:9850,wins:32,losses:4,winRate:88,country:'USA',flag:'🇺🇸',avatar:'⚡'},
+    {id:2,name:'Nova Blaze',handle:'@nova_blaze',game:'PUBG',rank:'Diamond',score:8420,wins:28,losses:6,winRate:82,country:'Japan',flag:'🇯🇵',avatar:'🌊'},
+    {id:3,name:'Frost Viper',handle:'@frost_viper',game:'Fortnite',rank:'Diamond',score:8100,wins:25,losses:5,winRate:83,country:'S.Korea',flag:'🇰🇷',avatar:'🧊'},
+    {id:4,name:'Titan Rush',handle:'@titan_rush',game:'Valorant',rank:'Platinum',score:7350,wins:22,losses:8,winRate:73,country:'Brazil',flag:'🇧🇷',avatar:'🔥'},
+    {id:5,name:'Shadow Rex',handle:'@shadow_rex',game:'PUBG',rank:'Platinum',score:6900,wins:20,losses:9,winRate:69,country:'Germany',flag:'🇩🇪',avatar:'🌑'},
+    {id:6,name:'Solar Pyre',handle:'@solar_pyre',game:'Fortnite',rank:'Gold',score:6250,wins:18,losses:10,winRate:64,country:'S.Africa',flag:'🇿🇦',avatar:'☀️'},
+    {id:7,name:'Iron Hawk',handle:'@iron_hawk',game:'Valorant',rank:'Gold',score:5800,wins:16,losses:11,winRate:59,country:'UK',flag:'🇬🇧',avatar:'🦅'},
+    {id:8,name:'Void Echo',handle:'@void_echo',game:'PUBG',rank:'Silver',score:5100,wins:14,losses:12,winRate:54,country:'France',flag:'🇫🇷',avatar:'🌀'},
+    {id:9,name:'Thunder Axe',handle:'@thunder_axe',game:'Fortnite',rank:'Silver',score:4600,wins:11,losses:13,winRate:46,country:'Australia',flag:'🇦🇺',avatar:'🌩️'}
+  ];}
+  renderLB();
+}
+
+function setFilter(g,el){
+  activeGame=g;
+  document.querySelectorAll('.lb-filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderLB();
+}
+
+function renderLB(){
+  const filtered=activeGame==='All'?allLB:allLB.filter(p=>p.game===activeGame);
+  // Podium
+  const pod=document.getElementById('podium');
+  const top3=filtered.slice(0,3);
+  const order=[1,0,2]; // display: 2nd, 1st, 3rd
+  pod.innerHTML='';
+  order.forEach((idx)=>{
+    const p=top3[idx];if(!p){pod.innerHTML+='<div></div>';return;}
+    const d=document.createElement('div');
+    d.className='pod-card '+(idx===0?'p1':idx===1?'p2':'p3');
+    d.innerHTML='<div class="pod-medal">'+MEDALS[idx]+'</div><div class="pod-av">'+p.avatar+'</div><div class="pod-name">'+p.name+'</div><div class="pod-score">'+p.score.toLocaleString()+'</div><div class="pod-info">'+p.winRate+'% WR · '+p.flag+' '+p.country+'</div>';
+    pod.appendChild(d);
+  });
+  // Table
+  const body=document.getElementById('lbBody');body.innerHTML='';
+  if(!filtered.length){body.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted)">No players found.</div>';return;}
+  filtered.forEach((p,i)=>{
+    const row=document.createElement('div');
+    const rnk=i+1;
+    row.className='lb-row'+(rnk<=3?' top'+rnk:'');
+    row.innerHTML=
+      '<div class="lb-rank'+(rnk<=3?' r'+rnk:'')+'">'+(rnk<=3?MEDALS[rnk-1]:rnk)+'</div>'+
+      '<div class="lb-player"><span class="lb-av">'+p.avatar+'</span><div><div class="lb-pname">'+p.name+'</div><div class="lb-handle">'+p.handle+'</div></div></div>'+
+      '<div class="lb-score">'+p.score.toLocaleString()+'</div>'+
+      '<div class="lb-wr">'+p.winRate+'%</div>'+
+      '<div class="lb-game">'+(GI[p.game]||'🎮')+' '+p.game+'</div>'+
+      '<div class="lb-country">'+p.flag+' '+p.country+'</div>';
+    body.appendChild(row);
+  });
+}
+loadLB();
+</script></body></html>

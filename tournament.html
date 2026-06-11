@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tournaments — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.t-wrap{max-width:1200px;margin:0 auto;padding:40px 5% 80px;}
+.t-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:48px;}
+.t-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);}
+.t-card:hover{border-color:rgba(245,166,35,.3);transform:translateY(-4px);box-shadow:var(--shadow-card);}
+.t-card-head{padding:22px 24px;background:var(--bg-light);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+.t-name{font-family:var(--font-display);font-size:20px;letter-spacing:1px;color:var(--text);}
+.t-game{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.t-status{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.s-progress{background:rgba(245,166,35,.15);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+.s-upcoming{background:rgba(52,152,219,.15);color:#3498db;border:1px solid rgba(52,152,219,.3);}
+.s-completed{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3);}
+.t-card-body{padding:20px 24px;}
+.t-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.ti{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;}
+.ti-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);margin-bottom:2px;}
+.ti-value{font-size:14px;font-weight:600;color:var(--text);}
+.t-prize{font-family:var(--font-display);font-size:22px;color:var(--amber);letter-spacing:1px;}
+.t-reg-bar{background:var(--bg-light);border-radius:999px;height:6px;overflow:hidden;margin:10px 0 6px;}
+.t-reg-fill{height:100%;background:var(--amber);border-radius:999px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.t-reg-label{font-size:11px;color:var(--text-muted);}
+.btn-register{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--radius-sm);padding:12px;font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);margin-top:14px;}
+.btn-register:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px var(--amber-glow);}
+.btn-register:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+/* Registration modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:modalIn .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes modalIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-head{padding:22px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg-light);}
+.modal-title{font-family:var(--font-display);font-size:20px;letter-spacing:2px;color:var(--text);}
+.modal-close{background:transparent;border:1px solid var(--border);color:var(--text-muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:24px;}
+.modal-sub{font-size:13px;color:var(--text-muted);margin-bottom:20px;}
+.fee-note{background:var(--amber-glow);border:1px solid rgba(245,166,35,.3);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* Payment simulation */
+.payment-section{background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;margin-bottom:16px;}
+.payment-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;}
+.payment-methods{display:flex;gap:10px;margin-bottom:16px;}
+.pay-method{flex:1;padding:10px;border:2px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:var(--transition);}
+.pay-method.selected,.pay-method:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
+.card-inputs{display:grid;grid-template-columns:1fr;gap:10px;}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:640px){.t-grid{grid-template-columns:1fr;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="TOURNAMENTS">
+    <div class="page-header-inner">
+      <span class="section-label">Season 2025</span>
+      <h1 class="section-title">TOURNAMENTS</h1>
+      <div class="amber-line"></div>
+      <p class="section-subtitle">Browse active tournaments, check prize pools, and register your spot before slots fill up.</p>
+    </div>
+  </div>
+  <div class="t-wrap">
+    <div class="t-grid" id="tGrid"><div style="text-align:center;padding:60px;color:var(--text-muted);grid-column:1/-1;">⏳ Loading tournaments…</div></div>
+  </div>
+</div>
+
+<!-- Registration Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">REGISTER</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-sub" id="modalSub">Complete the form to secure your slot.</div>
+      <div class="fee-note" id="feeNote">💳 Registration fee: <strong id="feeAmt">$25</strong></div>
+      <form id="regForm" novalidate>
+        <div class="form-group" id="grp-pn">
+          <label>Player Name / Handle <span class="req">*</span></label>
+          <input type="text" id="pName" placeholder="Your in-game name"/>
+          <div class="field-err">Player name is required.</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="grp-em">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" id="pEmail" placeholder="you@example.com"/>
+            <div class="field-err">Valid email required.</div>
+          </div>
+          <div class="form-group" id="grp-ph">
+            <label>Phone Number</label>
+            <input type="tel" id="pPhone" placeholder="+1 555 000 0000"/>
+          </div>
+        </div>
+        <!-- Payment section -->
+        <div class="payment-section">
+          <div class="payment-title">💳 Payment Method (Simulation)</div>
+          <div class="payment-methods">
+            <div class="pay-method selected" data-method="card" onclick="selMethod('card')">💳 Card</div>
+            <div class="pay-method" data-method="paypal" onclick="selMethod('paypal')">🅿️ PayPal</div>
+            <div class="pay-method" data-method="crypto" onclick="selMethod('crypto')">₿ Crypto</div>
+          </div>
+          <div class="card-inputs" id="cardInputs">
+            <div class="form-group" id="grp-cn">
+              <label>Card Number <span class="req">*</span></label>
+              <input type="text" id="cardNum" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/>
+              <div class="field-err">Enter a valid card number.</div>
+            </div>
+            <div class="card-row">
+              <div class="form-group" id="grp-exp">
+                <label>Expiry <span class="req">*</span></label>
+                <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5" oninput="fmtExp(this)"/>
+                <div class="field-err">Enter expiry (MM/YY).</div>
+              </div>
+              <div class="form-group" id="grp-cvv">
+                <label>CVV <span class="req">*</span></label>
+                <input type="text" id="cardCVV" placeholder="123" maxlength="3"/>
+                <div class="field-err">Enter 3-digit CVV.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:flex-start;gap:10px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer;">
+            <input type="checkbox" id="agreeTerms" style="width:16px;height:16px;accent-color:var(--amber);margin-top:2px;flex-shrink:0;"/>
+            <span>I agree to the Tournament <a href="#" style="color:var(--amber)">Terms &amp; Conditions</a> and confirm payment of the registration fee. <span class="req">*</span></span>
+          </label>
+          <div class="field-err" id="terms-err">You must agree to the terms.</div>
+        </div>
+        <button type="submit" class="btn-register" id="regSubmitBtn">🔐 Complete Registration &amp; Pay</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. All rights reserved.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+let selectedTournamentId=null;
+const STATUS_CLS={InProgress:'s-progress','In Progress':'s-progress',Upcoming:'s-upcoming',Completed:'s-completed'};
+
+async function loadTournaments(){
+  try{
+    const r=await GET('/tournaments');
+    renderTournaments(r.data);
+  }catch{
+    renderTournaments([
+      {id:1,name:'Apex Arena Grand Championship',game:'All Games',status:'In Progress',prizePool:50000,maxPlayers:32,registrations:9,fee:25,format:'Single Elimination',location:'Apex Stadium, London',startDate:'2025-07-05',endDate:'2025-08-23'},
+      {id:2,name:'Valorant Masters Cup',game:'Valorant',status:'Upcoming',prizePool:25000,maxPlayers:16,registrations:4,fee:15,format:'Double Elimination',location:'Online — Global',startDate:'2025-09-10',endDate:'2025-10-05'},
+      {id:3,name:'PUBG Battlegrounds Invitational',game:'PUBG',status:'Upcoming',prizePool:15000,maxPlayers:16,registrations:3,fee:10,format:'Battle Royale Points',location:'Online — Asia Pacific',startDate:'2025-09-20',endDate:'2025-10-12'},
+      {id:4,name:'Fortnite Storm Chasers',game:'Fortnite',status:'Completed',prizePool:10000,maxPlayers:24,registrations:3,fee:10,format:'Solo Points System',location:'Online — Global',startDate:'2025-05-01',endDate:'2025-06-15'}
+    ]);
+  }
+}
+
+function renderTournaments(ts){
+  const g=document.getElementById('tGrid');g.innerHTML='';
+  ts.forEach(t=>{
+    const regs=t.registrations||0,pct=Math.min(100,Math.round(regs/t.maxPlayers*100));
+    const full=regs>=t.maxPlayers;
+    const sc=STATUS_CLS[t.status]||'s-upcoming';
+    const gi={'All Games':'🌍','Valorant':'🎯','PUBG':'🪖','Fortnite':'⛏️'};
+    const c=document.createElement('div');c.className='t-card';
+    c.innerHTML=
+      '<div class="t-card-head">'+
+        '<div><div class="t-name">'+t.name+'</div><div class="t-game">'+(gi[t.game]||'🎮')+' '+t.game+'</div></div>'+
+        '<span class="t-status '+sc+'">'+t.status+'</span>'+
+      '</div>'+
+      '<div class="t-card-body">'+
+        '<div class="t-info-grid">'+
+          '<div class="ti"><div class="ti-label">Prize Pool</div><div class="t-prize">$'+t.prizePool.toLocaleString()+'</div></div>'+
+          '<div class="ti"><div class="ti-label">Format</div><div class="ti-value">'+t.format+'</div></div>'+
+          '<div class="ti"><div class="ti-label">Location</div><div class="ti-value" style="font-size:12px">'+t.location+'</div></div>'+
+          '<div class="ti"><div class="ti-label">Dates</div><div class="ti-value" style="font-size:12px">'+t.startDate+' → '+t.endDate+'</div></div>'+
+        '</div>'+
+        '<div class="t-reg-bar"><div class="t-reg-fill" style="width:'+pct+'%"></div></div>'+
+        '<div class="t-reg-label">'+regs+' / '+t.maxPlayers+' players registered ('+pct+'%)</div>'+
+        (t.status!=='Completed'?
+          '<button class="btn-register" onclick="openModal('+t.id+',\''+t.name+'\','+t.fee+')" '+(full?'disabled':'')+'>'+
+            (full?'🔒 Tournament Full':'⚡ Register — $'+t.fee+' Entry')+
+          '</button>':'<div style="margin-top:14px;text-align:center;font-size:13px;color:var(--text-muted);">🏁 Tournament Completed</div>')+
+      '</div>';
+    g.appendChild(c);
+  });
+}
+
+function openModal(id,name,fee){
+  selectedTournamentId=id;
+  document.getElementById('modalTitle').textContent='REGISTER: '+name.substring(0,20).toUpperCase();
+  document.getElementById('modalSub').textContent='Secure your slot in: '+name;
+  document.getElementById('feeAmt').textContent='$'+fee;
+  document.getElementById('modalOverlay').classList.add('open');
+  // Pre-fill if logged in
+  const u=Auth?Auth.getUser():null;
+  if(u){document.getElementById('pEmail').value=u.email||'';document.getElementById('pName').value=u.firstName+' '+u.lastName;}
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function selMethod(m){document.querySelectorAll('.pay-method').forEach(el=>el.classList.toggle('selected',el.dataset.method===m));document.getElementById('cardInputs').style.display=m==='card'?'grid':'none';}
+function fmtCard(el){let v=el.value.replace(/\D/g,'');let out='';for(let i=0;i<v.length;i++){if(i>0&&i%4===0)out+=' ';out+=v[i];}el.value=out;}
+function fmtExp(el){let v=el.value.replace(/\D/g,'');if(v.length>=2)v=v.substring(0,2)+'/'+v.substring(2);el.value=v;}
+
+function setFErr(id,msg){const g=document.getElementById('grp-'+id);if(!g)return;g.classList.add('err');if(msg){const f=g.querySelector('.field-err');if(f)f.textContent=msg;}}
+function clearFErr(id){const g=document.getElementById('grp-'+id);if(g)g.classList.remove('err');}
+
+document.getElementById('regForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const pn=document.getElementById('pName').value.trim();
+  const em=document.getElementById('pEmail').value.trim();
+  const cn=document.getElementById('cardNum')?.value.replace(/\s/g,'');
+  const ex=document.getElementById('cardExp')?.value;
+  const cv=document.getElementById('cardCVV')?.value;
+  const ag=document.getElementById('agreeTerms').checked;
+  const emailRx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let valid=true;
+  ['pn','em','cn','exp','cvv'].forEach(id=>clearFErr(id));document.getElementById('terms-err').style.display='none';
+  if(!pn){setFErr('pn','Player name is required.');valid=false;}
+  if(!em||!emailRx.test(em)){setFErr('em','Valid email required.');valid=false;}
+  const method=document.querySelector('.pay-method.selected')?.dataset.method;
+  if(method==='card'){
+    if(!cn||cn.length<15){setFErr('cn','Enter a valid card number.');valid=false;}
+    if(!ex||!/^\d{2}\/\d{2}$/.test(ex)){setFErr('exp','Enter expiry MM/YY.');valid=false;}
+    if(!cv||cv.length<3){setFErr('cvv','Enter 3-digit CVV.');valid=false;}
+  }
+  if(!ag){document.getElementById('terms-err').style.display='block';valid=false;}
+  if(!valid)return;
+  const btn=document.getElementById('regSubmitBtn');btn.disabled=true;btn.textContent='⏳ Processing payment…';
+  try{
+    // Simulate payment processing delay
+    await new Promise(r=>setTimeout(r,1500));
+    const payRef='PAY-'+Date.now().toString(36).toUpperCase();
+    await POST('/registrations',{tournamentId:selectedTournamentId,playerName:pn,email:em,phone:document.getElementById('pPhone').value,paymentRef:payRef});
+    closeModal();showToastGlobal('✅','Registration confirmed! Ref: '+payRef,'green');
+    loadTournaments();
+  }catch(err){
+    showToastGlobal('❌',err.message||'Registration failed','red');
+  }finally{btn.disabled=false;btn.textContent='🔐 Complete Registration & Pay';}
+});
+
+loadTournaments();
+</script></body></html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Login — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 5% 40px;background:radial-gradient(ellipse 50% 60% at 25% 40%,rgba(245,166,35,0.07) 0%,transparent 60%),var(--bg);}
+.auth-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;max-width:880px;width:100%;align-items:center;}
+.form-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px 36px;}
+.social-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:var(--transition);}
+.social-btn:hover{border-color:var(--amber);color:var(--text);}
+.divider{display:flex;align-items:center;gap:12px;color:var(--text-faint);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.forgot{display:flex;justify-content:flex-end;margin:-6px 0 14px;font-size:12px;}
+.forgot a{color:var(--text-muted);text-decoration:none;}
+.forgot a:hover{color:var(--amber);}
+.remember{display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:13px;color:var(--text-muted);cursor:pointer;}
+.remember input{width:15px;height:15px;accent-color:var(--amber);cursor:pointer;}
+.submit-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--radius-sm);padding:14px;font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);position:relative;}
+.submit-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 8px 24px var(--amber-glow);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+.submit-btn.loading::after{content:'';position:absolute;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;top:50%;left:50%;transform:translate(-50%,-50%);}
+.submit-btn.loading .btn-txt{opacity:0;}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+.auth-right{color:var(--text);}
+.sec-badge{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:13px;color:var(--text-muted);}
+.auth-switch{font-size:13px;color:var(--text-muted);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+.auth-switch a{color:var(--amber);text-decoration:none;font-weight:600;}
+.pwd-wrap{position:relative;}
+.pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:17px;user-select:none;}
+.shake{animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-5px);}40%,80%{transform:translateX(5px);}}
+@media(max-width:700px){.auth-grid{grid-template-columns:1fr;}.auth-right{display:none;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="auth-page">
+  <div class="auth-grid">
+    <div class="form-box">
+      <div style="font-family:var(--font-display);font-size:30px;letter-spacing:2px;color:var(--text);margin-bottom:4px;">WELCOME BACK</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Log in to your competitor account.</div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="socialHint()">🌐 Google</button>
+        <button class="social-btn" onclick="socialHint()">🎮 Discord</button>
+      </div>
+      <div class="divider">or login with email</div>
+      <form id="loginForm" novalidate>
+        <div class="form-group" id="grp-em"><label>Email Address <span class="req">*</span></label><input type="email" id="lEmail" placeholder="you@example.com" autocomplete="email"/><div class="field-err">Email is required.</div></div>
+        <div class="form-group" id="grp-pw">
+          <label>Password <span class="req">*</span></label>
+          <div class="pwd-wrap"><input type="password" id="lPwd" placeholder="Your password" autocomplete="current-password"/><span class="pwd-eye" id="eyeBtn">🙈</span></div>
+          <div class="field-err">Password is required.</div>
+        </div>
+        <div class="forgot"><a href="#">Forgot password?</a></div>
+        <label class="remember"><input type="checkbox" id="remMe"/> Keep me logged in</label>
+        <button type="submit" class="submit-btn" id="loginBtn"><span class="btn-txt">Log In →</span></button>
+      </form>
+      <div class="auth-switch">Don't have an account? <a href="signup.html">Sign up free →</a></div>
+    </div>
+    <div class="auth-right">
+      <span class="section-label">Competitor Portal</span>
+      <h2 class="section-title" style="font-size:32px;">ENTER THE ARENA</h2>
+      <div class="amber-line"></div>
+      <p class="section-subtitle" style="margin-bottom:28px;">Access your tournament dashboard, track live scores, and manage your profile.</p>
+      <div class="sec-badge">🔒 JWT token authentication</div>
+      <div class="sec-badge">💾 Session stored in localStorage</div>
+      <div class="sec-badge">⚡ Instant access to live data</div>
+      <div class="sec-badge">👤 Personalized profile & theme</div>
+      <div style="margin-top:20px;background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;">Demo Credentials</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:2;">
+          👑 Admin: <code style="color:var(--amber)">admin@apex.com</code> / <code style="color:var(--amber)">Admin@123</code><br>
+          ⚡ Player: <code style="color:var(--amber)">storm@apex.com</code> / <code style="color:var(--amber)">Storm@123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+document.getElementById('eyeBtn').addEventListener('click',function(){
+  const i=document.getElementById('lPwd'),s=i.type==='password';i.type=s?'text':'password';this.textContent=s?'👁️':'🙈';
+});
+['lEmail','lPwd'].forEach(id=>{document.getElementById(id).addEventListener('input',()=>{document.getElementById(id==='lEmail'?'grp-em':'grp-pw').classList.remove('err');});});
+
+document.getElementById('loginForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const em=document.getElementById('lEmail').value.trim(),pw=document.getElementById('lPwd').value;
+  const rx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let ok=true;
+  document.getElementById('grp-em').classList.remove('err');document.getElementById('grp-pw').classList.remove('err');
+  if(!em||!rx.test(em)){document.getElementById('grp-em').classList.add('err');shake(document.getElementById('lEmail'));ok=false;}
+  if(!pw){document.getElementById('grp-pw').classList.add('err');shake(document.getElementById('lPwd'));ok=false;}
+  if(!ok)return;
+  const btn=document.getElementById('loginBtn');btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await POST('/auth/login',{email:em,password:pw});
+    Auth.setSession(r.data.user,r.data.token);
+    showToastGlobal('✅','Welcome back, '+r.data.user.firstName+'!','green');
+    setTimeout(()=>window.location.href=r.data.user.role==='admin'?'admin.html':'profile.html',1000);
+  }catch(err){
+    showToastGlobal('❌',err.message||'Login failed','red');
+    document.getElementById('grp-em').classList.add('err');
+    document.getElementById('grp-pw').classList.add('err');
+    shake(document.getElementById('lPwd'));
+  }finally{btn.classList.remove('loading');btn.disabled=false;}
+});
+
+function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');}
+function socialHint(){showToastGlobal('🚧','Social login coming soon!','amber');}
+</script></body></html>

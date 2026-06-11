@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Profile — Apex Arena</title><link rel="stylesheet" href="style.css"/>
+<script>(function(){var h=document.documentElement;h.setAttribute('data-theme',localStorage.getItem('aa_theme')||'dark');h.setAttribute('data-accent',localStorage.getItem('aa_accent')||'amber');h.setAttribute('data-font',localStorage.getItem('aa_font')||'md');})();</script>
+<style>
+.profile-wrap{max-width:960px;margin:0 auto;padding:40px 5% 80px;display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start;}
+.profile-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:84px;}
+.profile-banner{height:100px;background:linear-gradient(135deg,var(--bg-light),var(--bg));display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
+.profile-body{padding:0 20px 24px;}
+.profile-av-wrap{width:72px;height:72px;background:var(--bg-card);border:3px solid var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:-36px auto 12px;position:relative;}
+.profile-name{text-align:center;font-family:var(--font-display);font-size:22px;letter-spacing:2px;color:var(--text);}
+.profile-email{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+.profile-role{text-align:center;margin-bottom:18px;}
+.role-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.role-admin{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.3);}
+.role-player{background:var(--amber-glow);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+.profile-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.profile-stat:last-child{border-bottom:none;}
+.profile-stat .lbl{color:var(--text-muted);}
+.profile-stat .val{color:var(--text);font-weight:600;}
+.edit-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;}
+.section-block{margin-bottom:32px;}
+.section-block-title{font-family:var(--font-display);font-size:18px;letter-spacing:2px;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.avatar-picker{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.av-opt{width:44px;height:44px;background:var(--bg-input);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;transition:var(--transition);}
+.av-opt:hover,.av-opt.selected{border-color:var(--amber);background:var(--amber-glow);}
+.theme-mini{display:flex;gap:10px;}
+.tm-opt{flex:1;padding:10px;border:2px solid var(--border);border-radius:var(--radius-md);cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--text-muted);transition:var(--transition);}
+.tm-opt.selected,.tm-opt:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
+.save-btn{background:var(--amber);color:#fff;border:none;border-radius:var(--radius-sm);padding:12px 28px;font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:var(--transition);}
+.save-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+@media(max-width:760px){.profile-wrap{grid-template-columns:1fr;}.profile-card{position:static;}}
+</style></head><body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-icon">A</div><div><div class="logo-text">APEX ARENA</div><div class="logo-sub">Tournament</div></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="players.html">Players</a></li>
+    <li><a href="tournament.html">Tournaments</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-auth" id="navAuth"></div>
+</nav>
+<div class="page-content">
+  <div class="page-header" data-bg-text="PROFILE"><div class="page-header-inner"><span class="section-label">My Account</span><h1 class="section-title">PLAYER PROFILE</h1><div class="amber-line"></div></div></div>
+  <div class="profile-wrap">
+    <div class="profile-card">
+      <div class="profile-banner"><span id="pAvBig">🎮</span></div>
+      <div class="profile-body">
+        <div class="profile-av-wrap"><span id="pAvSmall">🎮</span></div>
+        <div class="profile-name" id="pName">Loading…</div>
+        <div class="profile-email" id="pEmail">—</div>
+        <div class="profile-role"><span class="role-pill" id="pRolePill">—</span></div>
+        <div class="profile-stat"><span class="lbl">Member Since</span><span class="val" id="pSince">—</span></div>
+        <div class="profile-stat"><span class="lbl">Age</span><span class="val" id="pAge">—</span></div>
+        <div class="profile-stat"><span class="lbl">Theme</span><span class="val" id="pTheme">—</span></div>
+        <div class="profile-stat"><span class="lbl">Account Type</span><span class="val" id="pRole">—</span></div>
+      </div>
+    </div>
+    <div class="edit-section">
+      <div class="section-block">
+        <div class="section-block-title">EDIT PROFILE</div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" id="eFirst"/></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="eLast"/></div>
+        </div>
+        <div class="form-group"><label>Age</label><input type="number" id="eAge" min="13" max="99"/></div>
+      </div>
+      <div class="section-block">
+        <div class="section-block-title">CHOOSE AVATAR</div>
+        <div class="avatar-picker" id="avPicker">
+          <div class="av-opt" data-av="⚡" onclick="selAv('⚡',this)">⚡</div>
+          <div class="av-opt" data-av="🔥" onclick="selAv('🔥',this)">🔥</div>
+          <div class="av-opt" data-av="🌊" onclick="selAv('🌊',this)">🌊</div>
+          <div class="av-opt" data-av="🧊" onclick="selAv('🧊',this)">🧊</div>
+          <div class="av-opt" data-av="🌑" onclick="selAv('🌑',this)">🌑</div>
+          <div class="av-opt" data-av="🦅" onclick="selAv('🦅',this)">🦅</div>
+          <div class="av-opt" data-av="🎮" onclick="selAv('🎮',this)">🎮</div>
+          <div class="av-opt" data-av="👑" onclick="selAv('👑',this)">👑</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-block-title">🎨 PERSONALIZED THEME</div>
+        <div class="theme-mini">
+          <div class="tm-opt" id="tm-dark" onclick="selTheme('dark',this)">🌙 Dark Mode</div>
+          <div class="tm-opt" id="tm-light" onclick="selTheme('light',this)">☀️ Light Mode</div>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveProfile()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+<footer><p>© 2025 <span>Apex Arena Tournament</span>. Profile data from <span>GET /api/auth/me</span>.</p></footer>
+<script src="api.js"></script><script src="theme.js"></script>
+<script>
+let curUser=null,selAvatar='🎮',selThemeVal='dark';
+
+async function loadProfile(){
+  if(!Auth.isLoggedIn()){showToastGlobal('⚠️','Please log in first','amber');setTimeout(()=>window.location.href='login.html',1200);return;}
+  try{
+    const r=await GET('/auth/me');curUser=r.data;renderProfile(curUser);
+  }catch{
+    curUser=Auth.getUser();if(curUser)renderProfile(curUser);
+    else{showToastGlobal('❌','Session expired','red');setTimeout(()=>window.location.href='login.html',1200);}
+  }
+}
+
+function renderProfile(u){
+  document.getElementById('pAvBig').textContent=u.avatar||'🎮';
+  document.getElementById('pAvSmall').textContent=u.avatar||'🎮';
+  document.getElementById('pName').textContent=u.firstName+' '+u.lastName;
+  document.getElementById('pEmail').textContent=u.email;
+  const rp=document.getElementById('pRolePill');rp.textContent=(u.role==='admin'?'👑 ':'⚡ ')+u.role;rp.className='role-pill '+(u.role==='admin'?'role-admin':'role-player');
+  document.getElementById('pSince').textContent=new Date(u.createdAt||Date.now()).toLocaleDateString();
+  document.getElementById('pAge').textContent=u.age||'—';
+  document.getElementById('pTheme').textContent=u.theme||'dark';
+  document.getElementById('pRole').textContent=u.role;
+  document.getElementById('eFirst').value=u.firstName;
+  document.getElementById('eLast').value=u.lastName;
+  document.getElementById('eAge').value=u.age||'';
+  selAvatar=u.avatar||'🎮';selThemeVal=u.theme||'dark';
+  document.querySelectorAll('.av-opt').forEach(el=>el.classList.toggle('selected',el.dataset.av===selAvatar));
+  document.getElementById('tm-dark').classList.toggle('selected',selThemeVal==='dark');
+  document.getElementById('tm-light').classList.toggle('selected',selThemeVal==='light');
+}
+
+function selAv(av,el){selAvatar=av;document.querySelectorAll('.av-opt').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');document.getElementById('pAvBig').textContent=av;document.getElementById('pAvSmall').textContent=av;}
+function selTheme(t,el){selThemeVal=t;document.getElementById('tm-dark').classList.toggle('selected',t==='dark');document.getElementById('tm-light').classList.toggle('selected',t==='light');setTheme(t);}
+
+async function saveProfile(){
+  const body={firstName:document.getElementById('eFirst').value.trim(),lastName:document.getElementById('eLast').value.trim(),age:parseInt(document.getElementById('eAge').value)||null,avatar:selAvatar,theme:selThemeVal};
+  try{
+    const r=await PUT('/auth/me',body);
+    Auth.setSession(r.data,Auth.getToken());
+    renderProfile(r.data);
+    showToastGlobal('✅','Profile updated!','green');
+  }catch(err){showToastGlobal('❌',err.message||'Update failed','red');}
+}
+loadProfile();
+</script></body></html>
