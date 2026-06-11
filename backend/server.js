@@ -538,6 +538,69 @@ app.get('/api/leaderboard', (req, res) => {
   ok(res, ranked, { total: ranked.length });
 });
 
+/* ── AI Chatbot (dynamic: live data + conversation memory) ── */
+app.post('/api/chat', async (req, res) => {
+  const { message, history } = req.body;
+  if (!message) return res.status(400).json({ error: 'No message provided' });
+
+  try {
+    const db = readDB();
+
+    // Build live context from the database
+    const tournamentInfo = db.tournaments.map(t => {
+      const regs = db.registrations.filter(r => r.tournamentId === t.id).length;
+      return `- ${t.name} (${t.game}): ${t.status}, prize $${t.prizePool.toLocaleString()}, entry fee $${t.fee}, ${regs}/${t.maxPlayers} registered, runs ${t.startDate} to ${t.endDate}, format ${t.format}, location ${t.location}`;
+    }).join('\n');
+
+    const topPlayers = [...db.players]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+      .map((p, i) => `${i + 1}. ${p.name} (${p.handle}) — ${p.game}, ${p.rank}, score ${p.score}, ${p.winRate}% win rate, ${p.country}`)
+      .join('\n');
+
+    const teamInfo = db.teams
+      .map(t => `- ${t.name} ${t.tag} (${t.game}, ${t.region}): rank #${t.ranking}, ${t.wins}W-${t.losses}L`)
+      .join('\n');
+
+    const systemPrompt = `You are Apex, the AI assistant for the Apex Arena Tournament website. You help users with tournament registration, player info, game tips for Valorant, PUBG and Fortnite, and general esports questions. Keep answers short and friendly.
+
+Here is the CURRENT live data from the website. Use these real numbers when answering:
+
+=== TOURNAMENTS ===
+${tournamentInfo}
+
+=== TOP PLAYERS (LEADERBOARD) ===
+${topPlayers}
+
+=== TEAMS ===
+${teamInfo}
+
+If a user asks about something not in this data, answer generally. Always use the real numbers above when asked about tournaments, players, fees, prizes, or rankings.`;
+
+    // Build conversation with memory
+    const messages = [];
+    if (Array.isArray(history)) {
+      history.forEach(m => {
+        if (m && (m.role === 'user' || m.role === 'assistant') && m.content) {
+          messages.push({ role: m.role, content: String(m.content) });
+        }
+      });
+    }
+    messages.push({ role: 'user', content: message });
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      system: systemPrompt,
+      messages
+    });
+
+    res.json({ reply: response.content[0].text });
+  } catch (e) {
+    res.status(500).json({ error: 'AI unavailable', reply: 'Sorry, I am offline right now. Please try again later.' });
+  }
+});
+
 /* ══════════════════════════════════════════════════════════
    ADMIN  —  User management CRUD
 ══════════════════════════════════════════════════════════ */
