@@ -47,6 +47,8 @@ const rootNodeModules = path2.join(__dirname, '..', 'node_modules');
 Module.globalPaths.push(rootNodeModules);
 
 const express = require('express');
+const Anthropic = require('@anthropic-ai/sdk');
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const cors    = require('cors');
 const bcrypt  = require('bcryptjs');
 const jwt     = require('jsonwebtoken');
@@ -568,6 +570,23 @@ app.delete('/api/admin/users/:id', auth, adminOnly, (req, res) => {
   const deleted = db.users.splice(idx, 1)[0];
   writeDB(db);
   ok(res, { deleted: deleted.id, email: deleted.email });
+});
+
+/* ── AI Chatbot ─────────────────────────────────────────── */
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'No message provided' });
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      system: 'You are Apex, the AI assistant for Apex Arena Tournament website. You help users with tournament registration, player info, game tips for Valorant, PUBG and Fortnite, and general esports questions. Keep answers short and friendly.',
+      messages: [{ role: 'user', content: message }]
+    });
+    res.json({ reply: response.content[0].text });
+  } catch (e) {
+    res.status(500).json({ error: 'AI unavailable', reply: 'Sorry, I am offline right now. Please try again later.' });
+  }
 });
 
 /* ── Start server ─────────────────────────────────────── */
