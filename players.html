@@ -221,4 +221,6 @@ function showSkel(){
 function showErr(e){document.getElementById('playersGrid').innerHTML='<div class="empty-state"><div class="ei">⚠️</div><p>'+e.message+'<br><small>Start the API server: <code>node server.js</code></small></p><button onclick="loadPlayers()" style="margin-top:14px;padding:8px 20px;background:var(--amber);color:#fff;border:none;border-radius:6px;cursor:pointer;">↻ Retry</button></div>';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 loadPlayers();
-</script></body></html>
+</script>
+<script src="chatbot.js"></script>
+</body></html>
