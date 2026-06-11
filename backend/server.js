@@ -40,6 +40,12 @@
  ╚══════════════════════════════════════════════════════════════════╝
 */
 
+// Fix module resolution for Railway (packages installed in root, server runs from backend/)
+const Module = require('module');
+const path2  = require('path');
+const rootNodeModules = path2.join(__dirname, '..', 'node_modules');
+Module.globalPaths.push(rootNodeModules);
+
 const express = require('express');
 const cors    = require('cors');
 const bcrypt  = require('bcryptjs');

@@ -1,11 +1,12 @@
 {
   "name": "apex-arena-tournament",
   "version": "2.0.0",
-  "description": "Apex Arena Tournament — Full Stack Website",
-  "main": "server.js",
+  "description": "Apex Arena Tournament - Full Stack Website",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "install-all": "npm install && cd backend && npm install"
   },
   "engines": {
     "node": ">=16.0.0"
