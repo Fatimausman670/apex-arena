@@ -48,14 +48,38 @@ const fs      = require('fs');
 const path    = require('path');
 
 const app    = express();
-const PORT   = 3000;
+const PORT   = process.env.PORT || 3000;
 const SECRET = 'apex_arena_secret_key_2025';
 const DB     = path.join(__dirname, 'db.json');
 
 /* ── Middleware ──────────────────────────────────────────── */
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
 app.use(express.json());
 app.use((req, _, next) => { console.log(new Date().toTimeString().slice(0,8), req.method, req.url); next(); });
+
+/* ── Serve frontend static files ────────────────────────── */
+// __dirname = /app/backend on Railway, so '..' = /app (root)
+const ROOT_DIR = path.join(__dirname, '..');
+app.use(express.static(ROOT_DIR));
+app.use(express.static(__dirname)); // fallback: serve from backend/ itself
+
+/* ── SPA fallback: serve index.html for non-API routes ──── */
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const indexPath = path.join(ROOT_DIR, 'index.html');
+  const fs2 = require('fs');
+  if (fs2.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  }
+});
+
+
 
 /* ══════════════════════════════════════════════════════════
    DATABASE  (JSON file — simulates 6 relational tables)
@@ -541,12 +565,12 @@ app.delete('/api/admin/users/:id', auth, adminOnly, (req, res) => {
 });
 
 /* ── Start server ─────────────────────────────────────── */
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   readDB(); // ensure db.json exists on first run
   console.log(`
   ╔═══════════════════════════════════════════════╗
   ║      APEX ARENA TOURNAMENT API v2.0          ║
-  ║      http://localhost:${PORT}                    ║
+  ║      http://localhost:${PORT}  (Railway: auto-URL) ║
   ╠═══════════════════════════════════════════════╣
   ║  6 Tables: users, players, tournaments,      ║
   ║            registrations, contacts, teams    ║
