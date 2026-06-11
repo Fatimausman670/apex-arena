@@ -1,18 +1,16 @@
 {
-  "name": "apex-arena-tournament",
+  "name": "apex-arena-backend",
   "version": "2.0.0",
-  "description": "Apex Arena Tournament - Full Stack Website",
-  "main": "backend/server.js",
+  "description": "Apex Arena Tournament - Backend",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js",
-    "install-all": "npm install && cd backend && npm install"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=16.0.0"
   },
   "dependencies": {
-     "@anthropic-ai/sdk": "^0.52.0",
+    "@anthropic-ai/sdk": "^0.52.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
